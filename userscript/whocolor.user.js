@@ -56,7 +56,7 @@
 Wikiwho = {
     /* A few configuration options */
     // Where to fetch Wikicolor data from
-    wikicolorUrl: "https://api.wikicolor.net/whocolor/",
+    wikicolorUrl: "http://api.wikicolor.net/whocolor/",
 
     // Color palette for highlighting of tokens (Kelly)
     tokenColors: [
@@ -155,7 +155,7 @@ Wikiwho = {
         Wikiwho.seqHistBox.append('<div id="wikiwhoseqhistboxopenindicator"><a>&#9650; Click here to open the whoCOLOR word history for the selected text &#9650;</a></div>');
         Wikiwho.seqHistBox.append('<div id="wikiwhoseqhistboxtoolongindicator">Selected text part is too long for the whoCOLOR word history</div>');
         Wikiwho.seqHistBox.append('<div id="wikiwhoseqhistboxonerevindicator">All the selected wiki markup was added in the currently viewed revision.</div>');
-        Wikiwho.seqHistBox.append('<img src="https://wikicolor.net/Clear_icon.svg" class="hvcloseicon"/>');
+        Wikiwho.seqHistBox.append('<img src="http://wikicolor.net/Clear_icon.svg" class="hvcloseicon"/>');
         Wikiwho.histview = $('<div id="wikiwhoseqhistview"></div>').appendTo(Wikiwho.seqHistBox);
     },
     
@@ -412,7 +412,7 @@ Wikiwho = {
                     
                     // Show diff links
                     // TODO: Check and maybe escape article title
-                    if(i != 0) revinfoline.append($('<div class="hvrevdifflinks"><a target="_blank" href="/w/index.php?title='+$("h1#firstHeading").text()+'&amp;diff='+Wikiwho.revid+'&amp;oldid='+revisionArr[i]+'"><img src="https://wikicolor.net/ArticleSearch.svg" class="hvdifficon"/></a></div>'));
+                    if(i != 0) revinfoline.append($('<div class="hvrevdifflinks"><a target="_blank" href="/w/index.php?title='+$("h1#firstHeading").text()+'&amp;diff='+Wikiwho.revid+'&amp;oldid='+revisionArr[i]+'"><img src="http://wikicolor.net/ArticleSearch.svg" class="hvdifficon"/></a></div>'));
                     var updownarrow = $('<span class="hvupdownarrow"></span>');
                     $('<a target="_blank" href="/w/index.php?title='
                       +$("h1#firstHeading").text()
@@ -1059,7 +1059,7 @@ Wikiwho = {
             if(!Wikiwho.authors[author.authorid].anon) {
                 // TODO: Check whether escaping author name is necessary
             	authentry = $('<li class="authEntry-'+author.authorid+'"><span class="authorCount">'+(author.count*100/Wikiwho.tokencount).toFixed(1)+'%</span></li>').appendTo(authorListBox);
-                var authicon = $('<span><a target="_blank" href="https://en.wikipedia.org/wiki/Special:Contributions/'+Wikiwho.authors[author.authorid].name+'"><img src="https://wikicolor.net/UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
+                var authicon = $('<span><a target="_blank" href="https://en.wikipedia.org/wiki/Special:Contributions/'+Wikiwho.authors[author.authorid].name+'"><img src="http://wikicolor.net/UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
                 $('<span>'+Wikiwho.authors[author.authorid].name+'</span>').appendTo(authentry);
                 
                 (function(author, authicon) {
@@ -1069,7 +1069,7 @@ Wikiwho = {
                     });
                 })(author, authicon);
             }else{
-                authentry = $('<li class="authEntry-'+author.authorid+'"><span class="authorCount">'+(author.count*100/Wikiwho.tokencount).toFixed(1)+'%</span><span><img src="https://wikicolor.net/UserAvatar.svg" class="wwhouserinfoicon wwhouserinfoiconhidden"/></span><span>'+Wikiwho.authors[author.authorid].name+'</span></li>').appendTo(authorListBox);
+                authentry = $('<li class="authEntry-'+author.authorid+'"><span class="authorCount">'+(author.count*100/Wikiwho.tokencount).toFixed(1)+'%</span><span><img src="http://wikicolor.net/UserAvatar.svg" class="wwhouserinfoicon wwhouserinfoiconhidden"/></span><span>'+Wikiwho.authors[author.authorid].name+'</span></li>').appendTo(authorListBox);
             }
             
             // Create click handler (wrap in a closure first so the variables are passed correctly)
@@ -1542,11 +1542,11 @@ background-image: repeating-linear-gradient(45deg, transparent, transparent 1em,
 width: 32px;\
 height: 32px;\
 float: right;\
-background-image: url(\"https://wikicolor.net/Speechbubbles_icon.svg\");\
+background-image: url(\"http://wikicolor.net/Speechbubbles_icon.svg\");\
 cursor: pointer;\
 }\
 #conflictviewbutton.conflictviewopen {\
-background-image: url(\"https://wikicolor.net/Speechbubbles_icon_green.svg\");\
+background-image: url(\"http://wikicolor.net/Speechbubbles_icon_green.svg\");\
 }\
 img.wwhouserinfoicon {\
 height: 1.5em;\
