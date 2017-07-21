@@ -45,17 +45,17 @@ SPECIAL_MARKUPS = (
         'end_regex': re.compile(r'</(math|timeline)>'),
         'no_spans': True
     },
-    # General HTML tags
+    # General HTML tag - only for text between < and >, not between start and end tags
     {
         'type': 'block',
         'start_regex': re.compile(r'<'),
         'end_regex': re.compile(r'>'),
-        'no_spans': False
+        'no_spans': True
     },
     # Headings
     {
         'type': 'single',
-        'start_regex': re.compile(r'(?<={})=+'.format(REGEX_HELPER_PATTERN)),
+        'start_regex': re.compile(r'(?<={})(=+|;)'.format(REGEX_HELPER_PATTERN)),
         'end_regex': None,
         'no_spans': True
     },
@@ -127,6 +127,6 @@ SPECIAL_MARKUPS = (
         'type': 'single',
         'start_regex': re.compile(r'\'\'+'),
         'end_regex': None,
-        'no_spans': False
+        'no_spans': True
     }
 )
