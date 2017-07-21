@@ -126,8 +126,8 @@ class WikiMarkupParser(object):
         editor_class = 'token-authorid-{}'.format(token['class_name'])
         if self._open_span is True:
             # TODO: this check is commented, not sure if it was a good idea.
-            if open_only is True:
-                return
+            # if open_only is True:
+            #     return
             self.extended_wiki_text += '</span>'
             self._open_span = False
         if close_only is False:
