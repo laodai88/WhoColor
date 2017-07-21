@@ -1,0 +1,2 @@
+# Include the image files
+recursive-include WhoColor/static/whocolor/images/ *
