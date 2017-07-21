@@ -79,7 +79,7 @@ class WikiMarkupParser(object):
     def __get_special_elem_end(self, special_elem):
         # Get end position of current special markup element
         end_pos_data = {}
-        if special_elem.get('end_len') and special_elem.get('end'):
+        if special_elem.get('end_len') is not None and special_elem.get('end') is not None:
             # if special markup is single (has no end regex)
             end_pos_data['start'] = special_elem['end']
             end_pos_data['len'] = special_elem['end_len']
