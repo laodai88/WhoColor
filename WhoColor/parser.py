@@ -109,28 +109,18 @@ class WikiMarkupParser(object):
                     next_['end_len'] = next_['start_len']
         return next_
 
-    def __add_spans(self, token, close_only=False, open_only=False):
+    def __add_spans(self, token, new_span=True):
         """
-        Explanation with possible inputs:
-            If there is only an opened span:
-                1) if open_only is True and close_only is False, close previous span and start new span (no_spans=False)
-                2) if open_only is False and close_only is True, close previous span (no_spans=True)
-                3) if open_only is False and close_only is False, close previous span and start new span (normal Token)
-            If there is not an opened span:
-                1) if close_only is False, start a new span (no_spans=False or normal Token)
-                2) if close_only is True, do nothing (no_spans=True)
-
-        If no_spans is False, then editor of first token of this special markup is added to whole special markup.
+        If there is only an opened span and new_span is True, close previous span and start new span (no_spans=False)
+        If there is only an opened span and new_span is False, close previous span (no_spans=True)
+        If there is not an opened span and new_span is True, start a new span (no_spans=False)
+        If there is not an opened span and new_span is do nothing (no_spans=True)
         """
-        # editor_class = 'token-authorid-{}'.format(token['editor'])
         editor_class = 'token-authorid-{}'.format(token['class_name'])
         if self._open_span is True:
-            # TODO: this check is commented, not sure if it was a good idea.
-            # if open_only is True:
-            #     return
             self.extended_wiki_text += '</span>'
             self._open_span = False
-        if close_only is False:
+        if new_span is True:
             self.extended_wiki_text += '<span class="author-token {} author-tokenid-{}">'.\
                                        format(editor_class, self._token_index)
             self._open_span = True
@@ -168,9 +158,7 @@ class WikiMarkupParser(object):
                     self._jumped_elems.add(next_special_elem['start'])
 
                     if add_spans:
-                        self.__add_spans(self.token,
-                                         close_only=next_special_elem['no_spans'],
-                                         open_only=not next_special_elem['no_spans'])
+                        self.__add_spans(self.token, new_span=not next_special_elem['no_spans'])
 
                     # NOTE: add_spans=False
                     # => no span will added into this special markup
