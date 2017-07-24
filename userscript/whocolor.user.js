@@ -225,7 +225,14 @@ Wikiwho = {
 
         if(Wikiwho.tries > 3) {
             // Failed 3 times, stop trying
-            alert("Failed to retrieve valid WikiWho data.");
+            // Check error and info messages
+            if(typeof Wikiwho.api_info !== "undefined") {
+                alert(Wikiwho.api_info);
+            } else if (typeof Wikiwho.api_error !== "undefined") {
+                alert(Wikiwho.api_error);
+            } else {
+                alert("Failed to retrieve valid WikiWho data.");
+            }
             return;
         }
 
@@ -246,16 +253,18 @@ Wikiwho = {
             success: Wikiwho.wikiwhoDataCallback,
             error: function() {
                 // Request failed, try again
-                setTimeout(Wikiwho.getWikiwhoData, 5000);
+                setTimeout(Wikiwho.getWikiwhoData, 5000);  // 5 seconds
                 return;
             }
         });
     },
 
     wikiwhoDataCallback: function(data) {
+        Wikiwho.api_success = data.success;
+        Wikiwho.api_info = data.info;
+        Wikiwho.api_error = data.error;
         // Retry when no success
-
-        if(!data.success == true) {
+        if(Wikiwho.api_success !== true) {
             setTimeout(Wikiwho.getWikiwhoData, 5000);
             return;
         }
@@ -1084,8 +1093,8 @@ Wikiwho = {
             (function(author_id, authentry) {
                 authentry.mousedown(function(e){ e.preventDefault(); });
                 authentry.click(function() {
-                    if(Wikiwho.coloredAuthors[author_id] == undefined) {
-                        if(Wikiwho.tokenColors.length == 0) {
+                    if(typeof Wikiwho.coloredAuthors[author_id] === 'undefined') {
+                        if(Wikiwho.tokenColors.length === 0) {
                             alert("You can't select any more authors; Please deselect an author first to be able to select another one again.");
 
                             return;
