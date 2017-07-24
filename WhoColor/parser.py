@@ -177,8 +177,7 @@ class WikiMarkupParser(object):
                     # if no_spans=False, this special markup will have one span with editor of first token
                     self.__parse_wiki_text(add_spans=False,
                                            special_elem=next_special_elem,
-                                           no_jump=next_special_elem['no_spans'])
-
+                                           no_jump=next_special_elem['no_jump'])
                     # Current WikiWho token
                     # token = self.__get_token()
                     # Get position of end regex of current special markup
