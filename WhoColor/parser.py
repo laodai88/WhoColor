@@ -33,7 +33,7 @@ class WikiMarkupParser(object):
         # The return values of the parser (error can be an error description)
         self.extended_wiki_text = ''
         self.error = False
-        self.present_editors = dict()  # {editor_id: [class_name, count], }
+        self.present_editors = dict()  # {editor_id: [editor_name, class_name, count], }
 
     def __set_token(self):
         self.token = None
@@ -213,16 +213,6 @@ class WikiMarkupParser(object):
             for editor_id, (editor_name, class_name, count) in
             sorted(self.present_editors.items(), key=lambda x: x[1][2], reverse=True)
         )
-
-        # # TODO calculate editor scores directly from token data?
-        # editors = defaultdict(int)
-        # for t in self.tokens:
-        #     editors[t['editor']] += 1
-        # editor_ids = {e for e in editors if not e.startswith('0|')}
-        # wp_users_obj = WikipediaUser(editor_ids)
-        # editor_names_dict = wp_users_obj.get_editor_names()
-        # self.present_editors = tuple((e, editor_names_dict.get(e, e), c*100.0/self.tokens_len)
-        #                              for e, c in sorted(editors.items(), key=lambda x: x[1], reverse=True))
 
     def generate_extended_wiki_markup(self):
         """
