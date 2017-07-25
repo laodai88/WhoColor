@@ -127,6 +127,11 @@ class WikiMarkupParser(object):
                                        format(editor_class, self._token_index)
             self._open_span = True
 
+    def __parse(self):
+        # Current WikiWho token
+        self.__set_token()
+        return self.__parse_wiki_text()
+
     def __parse_wiki_text(self, add_spans=True, special_elem=None, no_jump=False):
         """
         There are 3 possible calls of this method in this algorithm.
@@ -145,12 +150,11 @@ class WikiMarkupParser(object):
         :param no_jump: Flag to prevent jumping into parsing special elements.
         :return: True if parsing is successful.
         """
-        # Current WikiWho token
-        self.__set_token()
         # Get end position of current special markup
         special_elem_end = self.__get_special_elem_end(special_elem) if special_elem else False
-        # Get starting position of next special markup element in wiki text
-        next_special_elem = self.__get_next_special_element()
+        if no_jump is False and (not special_elem_end or self._wiki_text_pos < special_elem_end['start']):
+            # Get starting position of next special markup element in wiki text
+            next_special_elem = self.__get_next_special_element()
 
         while self._wiki_text_pos < (len(self.wiki_text) - 1):
             if self.token is None:
@@ -178,9 +182,8 @@ class WikiMarkupParser(object):
                     self.__parse_wiki_text(add_spans=False,
                                            special_elem=next_special_elem,
                                            no_jump=next_special_elem['no_jump'])
-                    # _wiki_text_pos is updated, we have to get new special element end and new next special element
-                    # Get position of end regex of current special markup
                     if special_elem:
+                        # _wiki_text_pos is updated, we have to get updated end position of current special markup
                         special_elem_end = self.__get_special_elem_end(special_elem)
                     # Get starting position of next special markup element
                     next_special_elem = self.__get_next_special_element()
@@ -235,7 +238,7 @@ class WikiMarkupParser(object):
                                         replace('\r', REGEX_HELPER_PATTERN)
         self.wiki_text_low = self.wiki_text.lower()
 
-        self.__parse_wiki_text()
+        self.__parse()
         self.__set_present_editors()
 
         # Remove regex patterns

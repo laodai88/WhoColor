@@ -106,9 +106,8 @@ SPECIAL_MARKUPS = (
     # },
     {
         'type': 'block',
-        'start_regex': re.compile(r'(?<=' + REGEX_HELPER_PATTERN + r'){\|'),  # TODO: it was (?<=WIKICOLORLB)\\{\\|
-        'end_regex': re.compile(r'(?<=' + REGEX_HELPER_PATTERN + r')\|}'),  # (?<=WIKICOLORLB)\\|\\}
-        # 'end_regex': re.compile(r'\|}(?=' + REGEX_HELPER_PATTERN + r')'),  # (?<=WIKICOLORLB)\\|\\}
+        'start_regex': re.compile(r'(?<=' + REGEX_HELPER_PATTERN + r'){\|'),
+        'end_regex': re.compile(r'(?<=' + REGEX_HELPER_PATTERN + r')\|}'),
         'no_spans': True,
         'no_jump': False
     },
