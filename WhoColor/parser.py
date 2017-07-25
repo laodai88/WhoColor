@@ -9,9 +9,6 @@ from .special_markups import SPECIAL_MARKUPS, REGEX_HELPER_PATTERN
 
 
 class WikiMarkupParser(object):
-    """
-    Explain how parser works: annotation etc...
-    """
     def __init__(self, wiki_text, tokens):  # , revisions):
         # Saves the full wikipedia markup and all WikiWho tokens
         self.wiki_text = wiki_text
@@ -132,6 +129,16 @@ class WikiMarkupParser(object):
 
     def __parse_wiki_text(self, add_spans=True, special_elem=None, no_jump=False):
         """
+        There are 3 possible calls of this method in this algorithm.
+        1) start of script and adding not special tokens with spans around into extended markup:
+        add_spans is True, special_elem is None and no_jump is False: Start, add spans around tokens until reaching
+        next special element. And jump into that element and process tokens inside that element.
+        2) Handling special markup elements:
+        add_spans is False, special_elem is not None and no_jump is True: Add each token until end of current special
+        element into extended wiki text without spans.
+        add_spans is False, special_elem is not None and no_jump is False: Add each token until end of current special
+        element into extended wiki text without spans. If there is special element is inside current special element,
+        jump into that element and process tokens inside that element
 
         :param add_spans: Flag to decide adding spans around tokens.
         :param special_elem: Current special element that parser is in.
@@ -153,7 +160,7 @@ class WikiMarkupParser(object):
                 self._wiki_text_pos = len(self.wiki_text)  # - 1
                 return True
 
-            # Don't jump anywhere if no_jump is set or if already in a special markup element
+            # Don't jump anywhere if no_jump is set
             if no_jump is False and (not special_elem_end or self._wiki_text_pos < special_elem_end['start']):
                 if next_special_elem and \
                    (not special_elem_end or next_special_elem['start'] < special_elem_end['start']) and \
@@ -171,15 +178,12 @@ class WikiMarkupParser(object):
                     self.__parse_wiki_text(add_spans=False,
                                            special_elem=next_special_elem,
                                            no_jump=next_special_elem['no_jump'])
-                    # Current WikiWho token
-                    # token = self.__get_token()
+                    # _wiki_text_pos is updated, we have to get new special element end and new next special element
                     # Get position of end regex of current special markup
                     if special_elem:
                         special_elem_end = self.__get_special_elem_end(special_elem)
                     # Get starting position of next special markup element
                     next_special_elem = self.__get_next_special_element()
-                    # if add_spans is True and next_special_elem['no_spans'] is True:
-                    #     self.__add_spans(token)
                     continue
 
             # Is it end of special element?
@@ -221,7 +225,9 @@ class WikiMarkupParser(object):
 
     def generate_extended_wiki_markup(self):
         """
-
+        Parse wiki text and add spans around tokens if possible.
+        Generate list of editors who are present in this article page including 3 information to be used in js code:
+        editor name, class name and authorship scores.
         """
         # Add regex helper pattern into wiki text in order to easy regex search
         self.wiki_text = self.wiki_text.replace('\r\n', REGEX_HELPER_PATTERN).\
