@@ -36,28 +36,26 @@ class WikiMarkupParser(object):
         self.token = None
         if self._token_index < self.tokens_len:
             self.token = self.tokens[self._token_index]
-            if not self.token.get('end'):
-                # if token is not already fetched.
-                # e = re.search(re.escape(self.token['str']), self.wiki_text[self._wiki_text_pos:], re.IGNORECASE).end()
-                # length = len([c for c in self.token['str'] if unicodedata.combining(c) == 0])
-                self.token['end'] = self._wiki_text_pos + \
-                                    self.wiki_text_low[self._wiki_text_pos:].index(self.token['str']) + \
-                                    len(self.token['str'])
-                # NOTE: len(self.token['str']) does not return always same length
-                # s = 'İstanbul'
-                # print(len(s), len(s.lower()))  # 8 - 9
+            # e = re.search(re.escape(self.token['str']), self.wiki_text[self._wiki_text_pos:], re.IGNORECASE).end()
+            # length = len([c for c in self.token['str'] if unicodedata.combining(c) == 0])
+            self.token['end'] = self._wiki_text_pos + \
+                                self.wiki_text_low[self._wiki_text_pos:].index(self.token['str']) + \
+                                len(self.token['str'])
+            # NOTE: len(self.token['str']) does not return always same length
+            # s = 'İstanbul'
+            # print(len(s), len(s.lower()))  # 8 - 9
 
-                # string_pos = self.wiki_text_low[self._wiki_text_pos:].find(token['str'])
-                # # if string_pos == -1:
-                # #     self.error = 'Token ({}) not found in markup'.format(token['str'])
-                # #     return None  # TODO: Handle this error correctly - actually this shouldn't be possible
-                # token['end'] = self._wiki_text_pos + string_pos + len(token['str'])
-                if self.token['editor'] in self.present_editors:
-                    self.present_editors[self.token['editor']][2] += 1
-                else:
-                    self.present_editors[self.token['editor']] = [self.token['editor_name'],
-                                                                  self.token['class_name'],
-                                                                  1]
+            # string_pos = self.wiki_text_low[self._wiki_text_pos:].find(token['str'])
+            # # if string_pos == -1:
+            # #     self.error = 'Token ({}) not found in markup'.format(token['str'])
+            # #     return None  # TODO: Handle this error correctly - actually this shouldn't be possible
+            # token['end'] = self._wiki_text_pos + string_pos + len(token['str'])
+            if self.token['editor'] in self.present_editors:
+                self.present_editors[self.token['editor']][2] += 1
+            else:
+                self.present_editors[self.token['editor']] = [self.token['editor_name'],
+                                                              self.token['class_name'],
+                                                              1]
 
     def __get_first_regex(self, regex):
         first_match = None
@@ -152,7 +150,7 @@ class WikiMarkupParser(object):
         """
         # Get end position of current special markup
         special_elem_end = self.__get_special_elem_end(special_elem) if special_elem else False
-        if no_jump is False and (not special_elem_end or self._wiki_text_pos < special_elem_end['start']):
+        if no_jump is False:
             # Get starting position of next special markup element in wiki text
             next_special_elem = self.__get_next_special_element()
 
