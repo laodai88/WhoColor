@@ -58,23 +58,24 @@ class WikiMarkupParser(object):
                                                               1]
 
     def __get_first_regex(self, regex):
-        first_match = None
-        for match in regex.finditer(self.wiki_text):
-            # search every time from the beginning of text
-            if (first_match is None or first_match.start() > match.start()) and match.start() >= self._wiki_text_pos:
-                # if match is first and starts after wiki text pos
-                first_match = match
-        if first_match is not None:
-            return {'str': first_match.group(), 'start': first_match.start()}
-        return None
-        # NOTE this doesnt work because some regex contains positive look behind!
-        # match = regex.search(self.wiki_text[self._wiki_text_pos:])
-        # if match:
-        #     return {
-        #         'str': match.group(),
-        #         'start': self._wiki_text_pos + match.start()
-        #     }
+        # first_match = None
+        # for match in regex.finditer(self.wiki_text):
+        #     # search every time from the beginning of text
+        #     if (first_match is None or first_match.start() > match.start()) and match.start() >= self._wiki_text_pos:
+        #         # if match is first and starts after wiki text pos
+        #         first_match = match
+        # if first_match is not None:
+        #     print('__get_first_regex:', self._wiki_text_pos, self._jumped_elems, first_match.start(), first_match.group(), regex)
+        #     return {'str': first_match.group(), 'start': first_match.start()}
         # return None
+        # NOTE this doesnt work because if regex contains positive look behind!
+        match = regex.search(self.wiki_text[self._wiki_text_pos:])
+        if match:
+            return {
+                'str': match.group(),
+                'start': self._wiki_text_pos + match.start()
+            }
+        return None
 
     def __get_special_elem_end(self, special_elem):
         # Get end position of current special markup element

@@ -61,14 +61,14 @@ SPECIAL_MARKUPS = (
     # Headings
     {
         'type': 'single',
-        'start_regex': re.compile(r'(?<={})(=+|;)'.format(REGEX_HELPER_PATTERN)),
+        'start_regex': re.compile(r'(=+|;)'),
         'end_regex': None,
         'no_spans': True,
         'no_jump': True
     },
     {
         'type': 'single',
-        'start_regex': re.compile(r'=+(?={})'.format(REGEX_HELPER_PATTERN)),
+        'start_regex': re.compile(r'=+'),
         'end_regex': None,
         'no_spans': True,
         'no_jump': True
@@ -76,14 +76,14 @@ SPECIAL_MARKUPS = (
     # Lists and blocks
     {
         'type': 'block',
-        'start_regex': re.compile(r'(?<={})[\\*#\\:]*;'.format(REGEX_HELPER_PATTERN)),
+        'start_regex': re.compile(r'[\\*#\\:]*;'),
         'end_regex': re.compile(r'\\:'),
         'no_spans': True,
         'no_jump': False
     },
     {
         'type': 'single',
-        'start_regex': re.compile(r'(?<={})[\\*#:]+'.format(REGEX_HELPER_PATTERN)),
+        'start_regex': re.compile(r'[\\*#:]+'),
         'end_regex': None,
         'no_spans': True,
         'no_jump': True
@@ -91,7 +91,7 @@ SPECIAL_MARKUPS = (
     # Horizontal lines
     {
         'type': 'single',
-        'start_regex': re.compile(r'(?<={})-----*'.format(REGEX_HELPER_PATTERN)),
+        'start_regex': re.compile(r'-----*'),
         'end_regex': None,
         'no_spans': True,
         'no_jump': True
@@ -106,8 +106,8 @@ SPECIAL_MARKUPS = (
     # },
     {
         'type': 'block',
-        'start_regex': re.compile(r'(?<=' + REGEX_HELPER_PATTERN + r'){\|'),
-        'end_regex': re.compile(r'(?<=' + REGEX_HELPER_PATTERN + r')\|}'),
+        'start_regex': re.compile(r'{\|'),
+        'end_regex': re.compile(r'\|}'),
         'no_spans': True,
         'no_jump': False
     },
