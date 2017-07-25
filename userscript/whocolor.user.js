@@ -240,7 +240,7 @@ Wikiwho = {
         location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
 
         //    "title": $("h1#firstHeading").text()
-        var ajax_url = Wikiwho.wikicolorUrl + "whocolor/v1.0.0-beta/" + $("h1#firstHeading").text().trim() + "/";
+        var ajax_url = Wikiwho.wikicolorUrl + "whocolor/v1.0.0-beta/" + encodeURIComponent($("h1#firstHeading").text().trim()) + "/";
         if(queryDict["oldid"]) {
             ajax_url = ajax_url + queryDict["oldid"] + "/";
         }
