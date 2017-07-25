@@ -231,7 +231,7 @@ class WikiMarkupParser(object):
         Generate list of editors who are present in this article page including 3 information to be used in js code:
         editor name, class name and authorship scores.
         """
-        # Add regex helper pattern into wiki text in order to easy regex search
+        # Add regex helper pattern into wiki text in order to keep newlines
         self.wiki_text = self.wiki_text.replace('\r\n', REGEX_HELPER_PATTERN).\
                                         replace('\n', REGEX_HELPER_PATTERN).\
                                         replace('\r', REGEX_HELPER_PATTERN)
