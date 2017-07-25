@@ -41,9 +41,14 @@ class WikiMarkupParser(object):
             self.token = self.tokens[self._token_index]
             if not self.token.get('end'):
                 # if token is not already fetched.
+                # e = re.search(re.escape(self.token['str']), self.wiki_text[self._wiki_text_pos:], re.IGNORECASE).end()
+                # length = len([c for c in self.token['str'] if unicodedata.combining(c) == 0])
                 self.token['end'] = self._wiki_text_pos + \
                                     self.wiki_text_low[self._wiki_text_pos:].index(self.token['str']) + \
                                     len(self.token['str'])
+                # NOTE: len(self.token['str']) does not return always same length
+                # s = 'İstanbul'
+                # print(len(s), len(s.lower()))  # 8 - 9
 
                 # string_pos = self.wiki_text_low[self._wiki_text_pos:].find(token['str'])
                 # # if string_pos == -1:
