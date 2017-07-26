@@ -45,8 +45,8 @@ SPECIAL_MARKUPS = (
     # Math, timeline tags
     {
         'type': 'block',
-        'start_regex': re.compile(r'<(math|timeline)[^>]*>'),
-        'end_regex': re.compile(r'</(math|timeline)>'),
+        'start_regex': re.compile(r'<(math|timeline|nowiki)[^>]*>'),
+        'end_regex': re.compile(r'</(math|timeline|nowiki)>'),
         'no_spans': True,
         'no_jump': False
     },
