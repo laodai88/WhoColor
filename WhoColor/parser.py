@@ -5,6 +5,8 @@
     Felix Stadthaus,
     Kenan Erdogan
 """
+import re
+
 from .special_markups import SPECIAL_MARKUPS, REGEX_HELPER_PATTERN
 
 
@@ -12,7 +14,6 @@ class WikiMarkupParser(object):
     def __init__(self, wiki_text, tokens):  # , revisions):
         # Saves the full wikipedia markup and all WikiWho tokens
         self.wiki_text = wiki_text
-        self.wiki_text_low = ''  # to find tokens - wikiwho tokens are always in lower case
         self.tokens = tokens
         self.tokens_len = len(tokens)
         # self.revisions = revisions
@@ -36,20 +37,15 @@ class WikiMarkupParser(object):
         self.token = None
         if self._token_index < self.tokens_len:
             self.token = self.tokens[self._token_index]
-            # e = re.search(re.escape(self.token['str']), self.wiki_text[self._wiki_text_pos:], re.IGNORECASE).end()
-            # length = len([c for c in self.token['str'] if unicodedata.combining(c) == 0])
-            self.token['end'] = self._wiki_text_pos + \
-                                self.wiki_text_low[self._wiki_text_pos:].index(self.token['str']) + \
-                                len(self.token['str'])
-            # NOTE: len(self.token['str']) does not return always same length
-            # s = 'İstanbul'
-            # print(len(s), len(s.lower()))  # 8 - 9
-
-            # string_pos = self.wiki_text_low[self._wiki_text_pos:].find(token['str'])
-            # # if string_pos == -1:
-            # #     self.error = 'Token ({}) not found in markup'.format(token['str'])
-            # #     return None  # TODO: Handle this error correctly - actually this shouldn't be possible
-            # token['end'] = self._wiki_text_pos + string_pos + len(token['str'])
+            token_pos = re.search(re.escape(self.token['str']), self.wiki_text[self._wiki_text_pos:], re.IGNORECASE)
+            if token_pos is None:
+                # token is not found. because most probably it contains some characters that has different length
+                # in lower and upper case such as 'İstanbul'
+                # get next token
+                self._token_index += 1
+                self.__set_token()
+                return
+            self.token['end'] = self._wiki_text_pos + token_pos.end()
             if self.token['editor'] in self.present_editors:
                 self.present_editors[self.token['editor']][2] += 1
             else:
@@ -235,7 +231,6 @@ class WikiMarkupParser(object):
         self.wiki_text = self.wiki_text.replace('\r\n', REGEX_HELPER_PATTERN).\
                                         replace('\n', REGEX_HELPER_PATTERN).\
                                         replace('\r', REGEX_HELPER_PATTERN)
-        self.wiki_text_low = self.wiki_text.lower()
 
         self.__parse()
         self.__set_present_editors()
