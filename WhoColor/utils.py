@@ -67,12 +67,15 @@ class WikipediaRevText(object):
             return pages
         for page_id, page in response['query']['pages'].items():
             namespace = page['ns']
-            for rev_data in page.get('revisions', []):
+            revisions = page.get('revisions')
+            if revisions is None:
+                return None
+            else:
                 return {
                     'page_id': int(page_id),
                     'namespace': namespace,
-                    'rev_id': rev_data['revid'],
-                    'rev_text': rev_data['*']
+                    'rev_id': revisions[0]['revid'],
+                    'rev_text': revisions[0]['*']
                 }
 
     def convert_wiki_text_to_html(self, wiki_text):
