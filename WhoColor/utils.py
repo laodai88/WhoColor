@@ -41,7 +41,7 @@ class WikipediaRevText(object):
                 params.update({'rvstartid': self.rev_id})  # , 'rvendid': rev_id})
         else:
             params = {'action': 'parse', 'title': self.page_title,
-                      'format': 'json', 'text': wiki_text}
+                      'format': 'json', 'text': wiki_text, 'prop': 'text'}
         data['data'] = params
         return data
 
