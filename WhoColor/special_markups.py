@@ -34,7 +34,8 @@ SPECIAL_MARKUPS = (
         'no_spans': True,  # no span is added around this element,
         'no_jump': False
     },
-    # Reference tags
+    # Reference tags - only start ref tag and attributes.
+    # Closing ref is detected by 'General HTML tag' regex
     {
         'type': 'block',
         'start_regex': re.compile(r'<ref'),
@@ -42,7 +43,7 @@ SPECIAL_MARKUPS = (
         'no_spans': True,
         'no_jump': False
     },
-    # Math, timeline tags
+    # Math, timeline, nowiki tags
     {
         'type': 'block',
         'start_regex': re.compile(r'<(math|timeline|nowiki)[^>]*>'),
@@ -50,7 +51,7 @@ SPECIAL_MARKUPS = (
         'no_spans': True,
         'no_jump': False
     },
-    # General HTML tag - only for text between < and >, not between start and end tags
+    # General HTML tag - only for text between < and > (tag name and attributes)
     {
         'type': 'block',
         'start_regex': re.compile(r'<'),
@@ -62,13 +63,6 @@ SPECIAL_MARKUPS = (
     {
         'type': 'single',
         'start_regex': re.compile(r'(=+|;)'),
-        'end_regex': None,
-        'no_spans': True,
-        'no_jump': True
-    },
-    {
-        'type': 'single',
-        'start_regex': re.compile(r'=+'),
         'end_regex': None,
         'no_spans': True,
         'no_jump': True
