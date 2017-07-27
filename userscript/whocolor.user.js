@@ -1,10 +1,9 @@
 // ==UserScript==
 // @name         WhoColor Userscript
-// @namespace    http://wikicolor.net/
+// @namespace    https://api.wikiwho.net/whocolor/v1.0.0-beta/
 // @version      1.1
-// @description  Displays authorship information on wikipedia. v1.01: fixed an issue with passing the article title to jquery
+// @description  Displays authorship information on wikipedia.
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js
-// @require   http://wikicolor.net/moment-with-locales.js?v=1
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
