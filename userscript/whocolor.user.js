@@ -3,7 +3,7 @@
 // @namespace    https://api.wikiwho.net/whocolor/v1.0.0-beta/
 // @version      1.1
 // @description  Displays authorship information on wikipedia.
-// @require      https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js
+// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
