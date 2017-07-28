@@ -32,11 +32,13 @@ class WikiMarkupParser(object):
         self.extended_wiki_text = ''
         self.error = False
         self.present_editors = dict()  # {editor_id: [editor_name, class_name, count], }
+        self.conflict_scores = list()
 
     def __set_token(self):
         self.token = None
         if self._token_index < self.tokens_len:
             self.token = self.tokens[self._token_index]
+            self.conflict_scores.append(self.token['conflict_score'])
             token_pos = re.search(re.escape(self.token['str']), self.wiki_text[self._wiki_text_pos:], re.IGNORECASE)
             if token_pos is None:
                 # token is not found. because most probably it contains some characters that has different length

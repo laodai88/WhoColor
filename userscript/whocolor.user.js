@@ -277,6 +277,7 @@ Wikiwho = {
         // Save author and revision data
         // Wikiwho.authors = data.authors;
         Wikiwho.authors_current = data.present_editors;
+        Wikiwho.conflict_scores = data.conflict_scores;
         // Wikiwho.revisions = data.revisions;
         // Wikiwho.tokencount = data.tokencount;
         // Wikiwho.tokens = data.tokens;
@@ -1268,25 +1269,22 @@ Wikiwho = {
     },
 
     openConflictView: function() {
-        var tokenValues = new Array();
-        var biggestValue = 0;
-
-        // Go through all tokens and value them based on ins and outs
-        for (i = 0; i < Wikiwho.tokens.length; i++) {
-            var token = Wikiwho.tokens[i];
-
-            tokenValues[i] = token.in.length + token.out.length;
-
-            if(biggestValue < tokenValues[i]) biggestValue = tokenValues[i];
-        }
+        var biggestConflictScore = Math.max.apply(Math, Wikiwho.conflict_scores);
 
         // Do nothing - no conflicts (special case)
-        if(biggestValue == 0) return;
+        if(biggestConflictScore === 0) return;
 
         // Color all tokens
-        for (i = 0; i < tokenValues.length; i++) {
-            $('.author-tokenid-'+i).css("background-color", 'rgb(256, '+Math.floor(255*(biggestValue - tokenValues[i])/biggestValue)+', '+Math.floor(255*(biggestValue - tokenValues[i])/biggestValue)+')');
-            $('.author-tokenid-'+i).css("color", Wikiwho.getContrastingColorRGB(256, Math.floor(255*(biggestValue - tokenValues[i])/biggestValue), Math.floor(255*(biggestValue - tokenValues[i])/biggestValue))[0]);
+        var conflict_color_value = 0;
+        for (i = 0; i < Wikiwho.conflict_scores.length; i++) {
+            conflict_color_value = Math.floor(255*(biggestConflictScore - Wikiwho.conflict_scores[i])/biggestConflictScore);
+            if (conflict_color_value !== 255) {
+                // 255 means no conflict
+                $('.author-tokenid-'+i).css({
+                    'background-color': 'rgb(256, '+conflict_color_value+', '+conflict_color_value+')',
+                    'color': Wikiwho.getContrastingColorRGB(256, conflict_color_value, conflict_color_value)[0]
+                });
+            }
         }
 
         // Mark conflict view as open
@@ -1296,17 +1294,20 @@ Wikiwho = {
 
     closeConflictView: function() {
         // Remove colorization
-        $(".author-token").css("background-color", "");
-        $(".author-token").css("color", "");
-
+        $('.author-token').css({
+            'background-color': '',
+            'color': ''
+        });
         // Recolor tokens
         Object.keys(Wikiwho.coloredAuthors).forEach(function(authorid) {
             var color = Wikiwho.coloredAuthors[authorid];
             var contrastColor = Wikiwho.getContrastingColor(color);
             $(".token-authorid-"+authorid).css("background-color", color);
             $(".token-authorid-"+authorid).css("color", contrastColor[0]).find("*").css("color", contrastColor[1]);
-            $(".hvauthorid-"+authorid).css("background-color", color);
-            $(".hvauthorid-"+authorid).css("color", contrastColor[0]);
+            $('.hvauthorid-'+authorid).css({
+                'background-color': color,
+                'color': contrastColor[0]
+            });
         });
 
         // Mark conflict view as closed

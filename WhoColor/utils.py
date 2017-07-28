@@ -157,7 +157,7 @@ class WikiWhoRevContent(object):
             url_params = 'article_title/{}/{}'.format(self.page_title, self.rev_id)
         ww_api_url = 'https://api.wikiwho.net/api/v1.0.0-beta'
         return {'url': '{}/rev_content/{}/'.format(ww_api_url, url_params),
-                'params': {'o_rev_id': 'false', 'editor': 'true', 'token_id': 'false', 'out': 'false', 'in': 'false'}}
+                'params': {'o_rev_id': 'false', 'editor': 'true', 'token_id': 'false', 'out': 'true', 'in': 'true'}}
 
     def _make_request(self, data):
         response = requests.get(**data).json()
@@ -175,7 +175,7 @@ class WikiWhoRevContent(object):
         _, rev_data = response['revisions'][0].popitem()
 
         # get editor names from wp api
-        editor_ids = {t for t in rev_data['tokens'] if not t['editor'].startswith('0|')}
+        editor_ids = {t['editor'] for t in rev_data['tokens'] if not t['editor'].startswith('0|')}
         wp_users_obj = WikipediaUser(editor_ids)
         editor_names_dict = wp_users_obj.get_editor_names()
 
@@ -187,4 +187,6 @@ class WikiWhoRevContent(object):
                 token['class_name'] = hashlib.md5(token['editor'].encode('utf-8')).hexdigest()
             else:
                 token['class_name'] = token['editor']
+            # TODO better conflict scores. remove also self reverts
+            token['conflict_score'] = len(token['in']) + len(token['out'])
         return rev_data['tokens']
