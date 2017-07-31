@@ -148,16 +148,25 @@ class WikiWhoRevContent(object):
         self.page_title = page_title
         self.rev_id = rev_id
 
-    def _prepare_request(self):
-        if self.page_id:
-            url_params = 'page_id/{}'.format(self.page_id)
-        elif self.page_title:
-            url_params = 'article_title/{}'.format(self.page_title)
-        elif self.rev_id:
-            url_params = 'article_title/{}/{}'.format(self.page_title, self.rev_id)
+    def _prepare_request(self, rev_ids=False):
         ww_api_url = 'https://api.wikiwho.net/api/v1.0.0-beta'
-        return {'url': '{}/rev_content/{}/'.format(ww_api_url, url_params),
-                'params': {'o_rev_id': 'false', 'editor': 'true', 'token_id': 'false', 'out': 'true', 'in': 'true'}}
+        if rev_ids:
+            if self.page_id:
+                url_params = 'page_id/{}'.format(self.page_id)
+            elif self.page_title:
+                url_params = '{}'.format(self.page_title)
+            return {'url': '{}/rev_ids/{}/'.format(ww_api_url, url_params),
+                    'params': {'editor': 'true', 'timestamp': 'false'}}
+        else:
+            if self.page_id:
+                url_params = 'page_id/{}'.format(self.page_id)
+            elif self.page_title:
+                url_params = 'article_title/{}'.format(self.page_title)
+            elif self.rev_id:
+                url_params = 'article_title/{}/{}'.format(self.page_title, self.rev_id)
+            return {'url': '{}/rev_content/{}/'.format(ww_api_url, url_params),
+                    'params': {'o_rev_id': 'false', 'editor': 'true',
+                               'token_id': 'false', 'out': 'true', 'in': 'true'}}
 
     def _make_request(self, data):
         response = requests.get(**data).json()
@@ -170,9 +179,14 @@ class WikiWhoRevContent(object):
         """
         if self.page_id is None and self.page_title is None and self.rev_id is None:
             raise Exception('Please provide page id or page title or rev id.')
+        # get rev content
         data = self._prepare_request()
         response = self._make_request(data)
         _, rev_data = response['revisions'][0].popitem()
+        # get revisions-editors
+        data = self._prepare_request(rev_ids=True)
+        response = self._make_request(data)
+        revisions = {r['id']: r['editor'] for r in response['revisions']}
 
         # get editor names from wp api
         editor_ids = {t['editor'] for t in rev_data['tokens'] if not t['editor'].startswith('0|')}
@@ -187,6 +201,24 @@ class WikiWhoRevContent(object):
                 token['class_name'] = hashlib.md5(token['editor'].encode('utf-8')).hexdigest()
             else:
                 token['class_name'] = token['editor']
-            # TODO better conflict scores. remove also self reverts
-            token['conflict_score'] = len(token['in']) + len(token['out'])
+            # calculate conflict score
+            editor_in_prev = None
+            conflict_score = 0
+            for i, out_ in enumerate(token['out']):
+                editor_out = revisions[out_]
+                if editor_in_prev is not None and editor_in_prev != editor_out:
+                    # exclude first deletions and self reverts (undo actions)
+                    conflict_score += 1
+                try:
+                    in_ = token['in'][i]
+                except IndexError:
+                    # no in for this out. end of loop.
+                    pass
+                else:
+                    editor_in = revisions[in_]
+                    if editor_out != editor_in:
+                        # exclude self reverts (undo actions)
+                        conflict_score += 1
+                    editor_in_prev = editor_in
+            token['conflict_score'] = conflict_score
         return rev_data['tokens']
