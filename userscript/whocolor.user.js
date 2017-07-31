@@ -1270,23 +1270,22 @@ Wikiwho = {
 
     openConflictView: function() {
         var biggestConflictScore = Math.max.apply(Math, Wikiwho.conflict_scores);
-
         // Do nothing - no conflicts (special case)
-        if(biggestConflictScore === 0) return;
-
+        if(biggestConflictScore === 0) {
+            alert('There is no conflict.');
+            return;
+        }
         // Color all tokens
         var conflict_color_value = 0;
         for (i = 0; i < Wikiwho.conflict_scores.length; i++) {
-            conflict_color_value = Math.floor(255*(biggestConflictScore - Wikiwho.conflict_scores[i])/biggestConflictScore);
-            if (conflict_color_value !== 255) {
-                // 255 means no conflict
+            if (Wikiwho.conflict_scores[i] !== 0) {
+                conflict_color_value = Wikiwho.conflict_scores[i]/biggestConflictScore;
                 $('.author-tokenid-'+i).css({
-                    'background-color': 'rgb(256, '+conflict_color_value+', '+conflict_color_value+')',
-                    'color': Wikiwho.getContrastingColorRGB(256, conflict_color_value, conflict_color_value)[0]
+                    'background-color': 'rgba(255,0,0,'+conflict_color_value+')',
+                    'color': (conflict_color_value >= 0.5) ? 'white' : 'black'
                 });
             }
         }
-
         // Mark conflict view as open
         $('#conflictviewbutton').addClass("conflictviewopen");
         Wikiwho.conflictViewOpen = true;
@@ -1309,7 +1308,6 @@ Wikiwho = {
                 'color': contrastColor[0]
             });
         });
-
         // Mark conflict view as closed
         $('#conflictviewbutton').removeClass("conflictviewopen");
         Wikiwho.conflictViewOpen = false;
