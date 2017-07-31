@@ -1074,19 +1074,19 @@ Wikiwho = {
             // Anonymous authors don't have a contrib page
             // if(!Wikiwho.authors[author.authorid].anon) {
             if(!author_name.startsWith('0|')) {
-                // TODO: Check whether escaping author name is necessary
                 authentry = $('<li class="authEntry-'+author_id+'"><span class="authorCount">'+author_score.toFixed(1)+'%</span></li>').appendTo(authorListBox);
-                var authicon = $('<span><a target="_blank" href="https://en.wikipedia.org/wiki/Special:Contributions/'+author_name+'"><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/' +'UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
+                // var authicon =
+                $('<span><a target="_blank" href="https://en.wikipedia.org/wiki/Special:Contributions/'+author_name+'"><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
                 $('<span>'+author_name+'</span>').appendTo(authentry);
 
-                (function(author_id, author_name, authicon) {
-                    authicon.click(function() {
-                        window.open('https://en.wikipedia.org/wiki/Special:Contributions/'+author_name);
-                        return false;
-                    });
-                })(author_id, author_name, authicon);
+                // (function(author_name, authicon) {
+                //     authicon.click(function() {
+                //         window.open('https://en.wikipedia.org/wiki/Special:Contributions/'+author_name);
+                //         return false;
+                //     });
+                // })(author_name, authicon);
             }else{
-                authentry = $('<li class="authEntry-'+author_id+'"><span class="authorCount">'+author_score.toFixed(1)+'%</span><span><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/' +'UserAvatar.svg" class="wwhouserinfoicon wwhouserinfoiconhidden"/></span><span>'+author_name+'</span></li>').appendTo(authorListBox);
+                authentry = $('<li class="authEntry-'+author_id+'"><span class="authorCount">'+author_score.toFixed(1)+'%</span><span><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon wwhouserinfoiconhidden"/></span><span>'+author_name+'</span></li>').appendTo(authorListBox);
             }
 
             // Create click handler (wrap in a closure first so the variables are passed correctly)
@@ -1096,13 +1096,11 @@ Wikiwho = {
                     if(typeof Wikiwho.coloredAuthors[author_id] === 'undefined') {
                         if(Wikiwho.tokenColors.length === 0) {
                             alert("You can't select any more authors; Please deselect an author first to be able to select another one again.");
-
                             return;
                         }
 
                         if(Wikiwho.conflictViewOpen) {
                             alert("Conflict view is opened! Please close the conflict view first.");
-
                             return;
                         }
 
