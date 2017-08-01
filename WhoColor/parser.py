@@ -115,13 +115,12 @@ class WikiMarkupParser(object):
         If there is not an opened span and new_span is True, start a new span (no_spans=False)
         If there is not an opened span and new_span is do nothing (no_spans=True)
         """
-        editor_class = 'token-authorid-{}'.format(token['class_name'])
         if self._open_span is True:
             self.extended_wiki_text += '</span>'
             self._open_span = False
         if new_span is True:
-            self.extended_wiki_text += '<span class="author-token {} author-tokenid-{}">'.\
-                                       format(editor_class, self._token_index)
+            self.extended_wiki_text += '<span id="{}" class="editor-token token-editor-{}">'.\
+                                       format(self._token_index, token['class_name'])
             self._open_span = True
 
     def __parse(self):

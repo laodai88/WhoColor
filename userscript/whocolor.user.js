@@ -92,10 +92,12 @@ Wikiwho = {
     },
 
     // Determines whether white or black are the more contrasting colors (via the YIQ color model)
+    /*
     getContrastingColorRGB: function(red, green, blue){
         var yiq = (299*red + 587*green + 114*blue) / 1000;
         return (yiq >= 128) ? ['black', 'darkblue'] : ['white', 'lightblue'];
     },
+    */
 
     // Creates basic HTML elements like menu bars or buttons etc.
     createHTMLElements: function() {
@@ -136,7 +138,7 @@ Wikiwho = {
 
         $(window).scroll();
 
-        // Author list
+        // Editor list
         $('<div id="conflictviewbutton" title="Conflict view"/>').appendTo(Wikiwho.rightbarcontent);
         $('<h2>Editor List</h2>').appendTo(Wikiwho.rightbarcontent);
         $('<ul id="wikiwhoAuthorList"></ul>').appendTo(Wikiwho.rightbarcontent);
@@ -173,8 +175,8 @@ Wikiwho = {
         if(!Wikiwho.showingUnalteredContent) return true;
 
         // The actual content replacement (just visual for the sake of speed)
-        Wikiwho.originalcontent.attr("id", "old-mw-content-text")
-        Wikiwho.newcontent.attr("id", "mw-content-text")
+        Wikiwho.originalcontent.attr("id", "old-mw-content-text");
+        Wikiwho.newcontent.attr("id", "mw-content-text");
         Wikiwho.originalcontent.fadeOut(250, function() { Wikiwho.originalcontent.hide(); Wikiwho.newcontent.fadeIn(250, function() { Wikiwho.newcontent.show(); }); });
         //Wikiwho.newcontent.show();
         //Wikiwho.originalcontent.attr("id", "old-mw-content-text").hide();
@@ -286,7 +288,7 @@ Wikiwho = {
         // Fill right panel with data
         Wikiwho.fillRightPanel();
 
-        // Add token events for Wikiwho markup
+        // Add token events for WikiWho markup
         Wikiwho.addTokenEvents();
 
         // Add code handling text selections of Wikitext
@@ -298,11 +300,11 @@ Wikiwho = {
         // Wikiwho.addHistoryEvents();
 
         // Handle image selection outlines
-        $('.author-token').has("img").addClass("author-token-image");
+        $('span.editor-token').has("img").addClass("editor-token-image");
 
         // Debug output (color tokens in alternating colors)
-        // $(".author-token").filter(":odd").css("background-color", "green");
-        // $(".author-token").filter(":even").css("background-color", "yellow");
+        // $(".editor-token").filter(":odd").css("background-color", "green");
+        // $(".editor-token").filter(":even").css("background-color", "yellow");
     },
 
     addHistoryEvents: function() {
@@ -1072,21 +1074,12 @@ Wikiwho = {
             var authentry;
 
             // Anonymous authors don't have a contrib page
-            // if(!Wikiwho.authors[author.authorid].anon) {
             if(!author_name.startsWith('0|')) {
-                authentry = $('<li class="authEntry-'+author_id+'"><span class="authorCount">'+author_score.toFixed(1)+'%</span></li>').appendTo(authorListBox);
-                // var authicon =
+                authentry = $('<li id="'+author_id+'"><span class="editor-score">'+author_score.toFixed(1)+'%</span></li>').appendTo(authorListBox);
                 $('<span><a target="_blank" href="https://en.wikipedia.org/wiki/Special:Contributions/'+author_name+'"><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
                 $('<span>'+author_name+'</span>').appendTo(authentry);
-
-                // (function(author_name, authicon) {
-                //     authicon.click(function() {
-                //         window.open('https://en.wikipedia.org/wiki/Special:Contributions/'+author_name);
-                //         return false;
-                //     });
-                // })(author_name, authicon);
             }else{
-                authentry = $('<li class="authEntry-'+author_id+'"><span class="authorCount">'+author_score.toFixed(1)+'%</span><span><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon wwhouserinfoiconhidden"/></span><span>'+author_name+'</span></li>').appendTo(authorListBox);
+                authentry = $('<li id="'+author_id+'"><span class="editor-score">'+author_score.toFixed(1)+'%</span><span><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon wwhouserinfoiconhidden"/></span><span>'+author_name+'</span></li>').appendTo(authorListBox);
             }
 
             // Create click handler (wrap in a closure first so the variables are passed correctly)
@@ -1108,21 +1101,21 @@ Wikiwho = {
                         var color = Wikiwho.tokenColors.splice(0, 1)[0];
                         var contrastColor = Wikiwho.getContrastingColor(color);
                         Wikiwho.coloredAuthors[author_id] = color;
-                        $(".token-authorid-"+author_id).css("background-color", color);
-                        $(".token-authorid-"+author_id).css("color", contrastColor[0]).find("*").css("color", contrastColor[1]);
-                        $(".hvauthorid-"+author_id).css("background-color", color);
-                        $(".hvauthorid-"+author_id).css("color", contrastColor[0]);
-                        authentry.css("background-color", color);
-                        authentry.css("color", contrastColor[0]);
+                        $("span.token-editor-"+author_id).css({"background-color": color,
+                                                               "color": contrastColor[0]}).find("*").css("color", contrastColor[1]);
+                        $(".hvauthorid-"+author_id).css({"background-color": color,
+                                                         "color": contrastColor[0]});
+                        authentry.css({"background-color": color,
+                                       "color": contrastColor[0]});
                     }else{
                         Wikiwho.tokenColors.unshift(Wikiwho.coloredAuthors[author_id]);
                         delete Wikiwho.coloredAuthors[author_id];
-                        $(".token-authorid-"+author_id).css("background-color", "");
-                        $(".token-authorid-"+author_id).css("color", "").find("*").css("color", "");
-                        $(".hvauthorid-"+author_id).css("background-color", "");
-                        $(".hvauthorid-"+author_id).css("color", "");
-                        authentry.css("background-color", "");
-                        authentry.css("color", "");
+                        $("span.token-editor-"+author_id).css({"background-color": "",
+                                                             "color": ""}).find("*").css("color", "");
+                        $(".hvauthorid-"+author_id).css({"background-color": "",
+                                                         "color": ""});
+                        authentry.css({"background-color": "",
+                                       "color": ""});
                     }
                 });
 
@@ -1130,24 +1123,22 @@ Wikiwho = {
                     // Mousein event handler
 
                     // Remove all selection markers
-                    $(".author-token").removeClass("selected");
-                    $(".author-token").removeClass("hvselected");
+                    $("span.editor-token").removeClass("selected hvselected");
                     $(".hvrevauthor").removeClass("selected");
-                    $("#wikiwhorightbar li").removeClass("selected");
+                    $("#wikiwhoAuthorList li").removeClass("selected");
                     clearTimeout(Wikiwho.deselectTimeout);
 
                     // Mark all tokens of this author
-                    $(".token-authorid-"+author_id).addClass("selected");
+                    $("span.token-editor-"+author_id).addClass("selected");
                     $(".hvauthorid-"+author_id).addClass("selected");
-                    $(".authEntry-"+author_id).addClass("selected");
+                    $("li#"+author_id).addClass("selected");
                 }, function(event) {
                     // Mouseout event handler
                     Wikiwho.deselectTimeout = setTimeout(function(){
                         // Remove all selection markers
-                        $(".author-token").removeClass("selected");
-                        $(".author-token").removeClass("hvselected");
+                        $("span.editor-token").removeClass("selected hvselected");
                         $(".hvrevauthor").removeClass("selected");
-                        $("#wikiwhorightbar li").removeClass("selected");
+                        $("#wikiwhoAuthorList li").removeClass("selected");
                     }, 500);
                 });
             })(author_id, authentry);
@@ -1165,38 +1156,38 @@ Wikiwho = {
         $(".hvrevauthor").removeClass("selected");
 
         // Determine whether this author is already/still selected
-        var selected = $("#wikiwhorightbar li.selected");
+        var selected = $("#wikiwhoAuthorList li.selected");
         if(selected.length >= 1) {
-            var selectedAuthId = selected.attr('class').match(/authEntry-([a-f0-9]+)/)[1];
-            if(selected.attr('class').match(/authEntry-([a-f0-9]+)/)[1] == authorid) {
+            var selectedAuthId = selected.attr('id');
+            if(selectedAuthId == authorid) {
                 // Already selected, don't do anything else
                 return;
             }
 
             selected.stop( false, true ).stop( false, true ).stop( false, true );
             selected.removeClass("selected");
-            $(".token-authorid-"+selectedAuthId).removeClass("selected");
+            $("span.token-editor-"+selectedAuthId).removeClass("selected");
         }
 
         // Scroll the author list to the position of the current entrys author
         Wikiwho.scrollToShowAuthEntry(authorid);
 
         // Mark all tokens of this author
-        $(".token-authorid-"+authorid).addClass("selected");
+        $("span.token-editor-"+authorid).addClass("selected");
         $(".hvauthorid-"+authorid).addClass("selected");
-        $(".authEntry-"+authorid).addClass("selected");
+        $("li#"+authorid).addClass("selected");
 
         // Flash the author entry
-        $(".authEntry-"+authorid).delay(300).fadeOut(100).fadeIn(300);
+        $("li#"+authorid).delay(300).fadeOut(100).fadeIn(300);
     },
 
     addTokenEvents: function() {
-        var authortokens = $(".author-token");
+        var authortokens = $("span.editor-token");
 
         authortokens.hover(function(event) {
             // Mousein event handler
-            var authorid = $(this).attr('class').match(/token-authorid-([a-f0-9]+)/)[1];
-            var tokenid = $(this).attr('class').match(/author-tokenid-([a-f0-9]+)/)[1];
+            var authorid = $(this).attr('class').match(/token-editor-([a-f0-9]+)/)[1];
+            var tokenid = $(this).attr('id');
 
             // Call the general hover handler
             Wikiwho.hoverToken(authorid);
@@ -1219,28 +1210,29 @@ Wikiwho = {
                 }
             }
         }, function(event) {
-        	// Mouseout event handler
+            // Mouseout event handler
             Wikiwho.deselectTimeout = setTimeout(function(){
-            	// Remove all selection markers
-            	$(".author-token").removeClass("selected");
-                $(".author-token").removeClass("hvselected");
+                // Remove all selection markers
+                $("span.editor-token").removeClass("selected hvselected");
                 $(".hvrevauthor").removeClass("selected");
-            	$("#wikiwhorightbar li").removeClass("selected");
+                $("#wikiwhoAuthorList li").removeClass("selected");
             }, 500);
         });
 
         authortokens.click(function() {
-            var authorid = $(this).attr('class').match(/token-authorid-([a-f0-9]+)/)[1];
-
-            $(".authEntry-"+authorid).click();
-
+            if(Wikiwho.conflictViewOpen) {
+                alert("Conflict view is opened! Please close the conflict view first.");
+                return;
+            }
+            var authorid = $(this).attr('class').match(/token-editor-([a-f0-9]+)/)[1];
+            $("li#"+authorid).click();
             return false;
         });
     },
 
     scrollToShowAuthEntry: function(authorid) {
         // Scroll target
-        var authEntry = $('.authEntry-'+authorid);
+        var authEntry = $('li#'+authorid);
 
         // Don't try to scroll if there is no target to scroll to
         if(authEntry.length == 0) return;
@@ -1255,12 +1247,12 @@ Wikiwho = {
         // Determine whether we have to scroll
         if(entryTop < 0) {
             // Entry is too high, scroll up
-            $('#wikiwhorightbar').stop().animate({
+            authList.stop().animate({
                 scrollTop: entryTop + authListTop
             }, 300);
         }else if(entryTop > listHeight - entryHeight) {
             // Entry is too low, scroll down
-            $('#wikiwhorightbar').stop().animate({
+            authList.stop().animate({
                 scrollTop: entryTop + authListTop - listHeight + entryHeight
             }, 300);
         }
@@ -1273,12 +1265,20 @@ Wikiwho = {
             alert('There is no conflict.');
             return;
         }
+        // Remove colorization
+        $('span.editor-token').css({
+            'background-color': '',
+            'color': ''
+        });
+        $("#wikiwhoAuthorList").hide();
+        // $(".editor-token").unbind('mouseenter mouseleave');
+        // $(".editor-token").off('mouseenter mouseleave');
         // Color all tokens
         var conflict_color_value = 0;
-        for (i = 0; i < Wikiwho.conflict_scores.length; i++) {
+        for (var i = 0; i < Wikiwho.conflict_scores.length; i++) {
             if (Wikiwho.conflict_scores[i] !== 0) {
                 conflict_color_value = Wikiwho.conflict_scores[i]/biggestConflictScore;
-                $('.author-tokenid-'+i).css({
+                $('span#'+i).css({
                     'background-color': 'rgba(255,0,0,'+conflict_color_value+')',
                     'color': (conflict_color_value >= 0.5) ? 'white' : 'black'
                 });
@@ -1291,16 +1291,18 @@ Wikiwho = {
 
     closeConflictView: function() {
         // Remove colorization
-        $('.author-token').css({
+        $('span.editor-token').css({
             'background-color': '',
             'color': ''
         });
+        $("#wikiwhoAuthorList").show();
+        // $(".editor-token").on('mouseenter mouseleave');
         // Recolor tokens
         Object.keys(Wikiwho.coloredAuthors).forEach(function(authorid) {
             var color = Wikiwho.coloredAuthors[authorid];
             var contrastColor = Wikiwho.getContrastingColor(color);
-            $(".token-authorid-"+authorid).css("background-color", color);
-            $(".token-authorid-"+authorid).css("color", contrastColor[0]).find("*").css("color", contrastColor[1]);
+            $("span.token-editor-"+authorid).css({"background-color": color,
+                                                  "color": contrastColor[0]}).find("*").css("color", contrastColor[1]);
             $('.hvauthorid-'+authorid).css({
                 'background-color': color,
                 'color': contrastColor[0]
@@ -1318,7 +1320,7 @@ Wikiwho = {
 
     addStyle: function() {
         GM_addStyle("\
-#wikiwhorightbar .authorCount {\
+#wikiwhorightbar .editor-score {\
 float: right;\
 }\
 #wikiwhorightbar {\
@@ -1359,19 +1361,19 @@ padding-right: 2px;\
 padding-left: 2px;\
 background-color: #f5fffa;\
 }\
-.author-token.selected, .hvrevauthor.selected {\
+.editor-token.selected, .hvrevauthor.selected {\
 outline: 1px solid blue;\
 }\
-.hvselected, .author-token-image.hvselected img {\
+.hvselected, .editor-token-image.hvselected img {\
 outline: 1px solid red;\
 }\
-.author-token-image.hvselected {\
+.editor-token-image.hvselected {\
 outline: none;\
 }\
-.author-token-image.selected {\
+.editor-token-image.selected {\
 outline: none;\
 }\
-.author-token-image.selected img {\
+.editor-token-image.selected img {\
 outline: 1px solid blue;\
 }\
 #wikiwhoseqhistbox {\
