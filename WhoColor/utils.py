@@ -160,10 +160,10 @@ class WikiWhoRevContent(object):
         else:
             if self.page_id:
                 url_params = 'page_id/{}'.format(self.page_id)
-            elif self.page_title:
-                url_params = 'article_title/{}'.format(self.page_title)
             elif self.rev_id:
-                url_params = 'article_title/{}/{}'.format(self.page_title, self.rev_id)
+                url_params = '{}/{}'.format(self.page_title, self.rev_id)
+            elif self.page_title:
+                url_params = '{}'.format(self.page_title)
             return {'url': '{}/rev_content/{}/'.format(ww_api_url, url_params),
                     'params': {'o_rev_id': 'false', 'editor': 'true',
                                'token_id': 'false', 'out': 'true', 'in': 'true'}}
