@@ -1,5 +1,6 @@
 import unittest
-from WhoColor.utils import *
+from WhoColor.utils import WikiWhoRevContent
+
 
 class TestUtils(unittest.TestCase):
     def test_wikiwho_from_page_id(self):
