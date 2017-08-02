@@ -4,7 +4,6 @@
 // @version      1.1
 // @description  Displays authorship information on wikipedia.
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
-// @require      http://wikicolor.net/moment-with-locales.js?v=1
 // @require      https://api.wikiwho.net/static/whocolor/scripts/moment-with-locales.js
 // @grant        GM_addStyle
 // @grant        GM_setValue
