@@ -10,10 +10,10 @@ class TestUtils(unittest.TestCase):
         # test if request data is correct
         request_data = ww_rev_content._prepare_request()
         data = {'url': 'https://api.wikiwho.net/api/v1.0.0-beta/rev_content/page_id/{}/'.format(page_id),
-                'params': {'o_rev_id': 'false', 'editor': 'true', 'token_id': 'false', 'out': 'true', 'in': 'true'}}
+                'params': {'o_rev_id': 'true', 'editor': 'true', 'token_id': 'false', 'out': 'true', 'in': 'true'}}
         assert request_data == data
         # check if no errors
-        ww_rev_content.get_tokens()
+        ww_rev_content.get_revisions_and_tokens()
 
     def test_wikiwho_from_page_title(self):
         page_title = 'Selfie'
@@ -21,10 +21,10 @@ class TestUtils(unittest.TestCase):
         # test if request data is correct
         request_data = ww_rev_content._prepare_request()
         data = {'url': 'https://api.wikiwho.net/api/v1.0.0-beta/rev_content/{}/'.format(page_title),
-                'params': {'o_rev_id': 'false', 'editor': 'true', 'token_id': 'false', 'out': 'true', 'in': 'true'}}
+                'params': {'o_rev_id': 'true', 'editor': 'true', 'token_id': 'false', 'out': 'true', 'in': 'true'}}
         assert request_data == data
         # check if no errors
-        ww_rev_content.get_tokens()
+        ww_rev_content.get_revisions_and_tokens()
 
     def test_wikiwho_from_rev_id(self):
         # First revision of 'Selfie'
@@ -34,7 +34,7 @@ class TestUtils(unittest.TestCase):
         # test if request data is correct
         request_data = ww_rev_content._prepare_request()
         data = {'url': 'https://api.wikiwho.net/api/v1.0.0-beta/rev_content/{}/{}/'.format(page_title, rev_id),
-                'params': {'o_rev_id': 'false', 'editor': 'true', 'token_id': 'false', 'out': 'true', 'in': 'true'}}
+                'params': {'o_rev_id': 'true', 'editor': 'true', 'token_id': 'false', 'out': 'true', 'in': 'true'}}
         assert request_data == data
         # check if no errors
-        ww_rev_content.get_tokens()
+        ww_rev_content.get_revisions_and_tokens()

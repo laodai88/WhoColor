@@ -119,7 +119,7 @@ class WikiMarkupParser(object):
             self.extended_wiki_text += '</span>'
             self._open_span = False
         if new_span is True:
-            self.extended_wiki_text += '<span id="{}" class="editor-token token-editor-{}">'.\
+            self.extended_wiki_text += '<span id="token-{}" class="editor-token token-editor-{}">'.\
                                        format(self._token_index, token['class_name'])
             self._open_span = True
 

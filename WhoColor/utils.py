@@ -156,7 +156,7 @@ class WikiWhoRevContent(object):
             elif self.page_title:
                 url_params = '{}'.format(self.page_title)
             return {'url': '{}/rev_ids/{}/'.format(ww_api_url, url_params),
-                    'params': {'editor': 'true', 'timestamp': 'false'}}
+                    'params': {'editor': 'true', 'timestamp': 'true'}}
         else:
             if self.page_id:
                 url_params = 'page_id/{}'.format(self.page_id)
@@ -165,38 +165,55 @@ class WikiWhoRevContent(object):
             elif self.page_title:
                 url_params = '{}'.format(self.page_title)
             return {'url': '{}/rev_content/{}/'.format(ww_api_url, url_params),
-                    'params': {'o_rev_id': 'false', 'editor': 'true',
+                    'params': {'o_rev_id': 'true', 'editor': 'true',
                                'token_id': 'false', 'out': 'true', 'in': 'true'}}
 
     def _make_request(self, data):
         response = requests.get(**data).json()
         return response
 
-    def get_tokens(self):
-        """
-        Returns tokens of given article.
-        If no rev id is given, tokens of latest revision is returned.
-        """
-        if self.page_id is None and self.page_title is None and self.rev_id is None:
-            raise Exception('Please provide page id or page title or rev id.')
-        # get rev content
-        data = self._prepare_request()
-        response = self._make_request(data)
-        _, rev_data = response['revisions'][0].popitem()
+    def get_revisions_data(self):
         # get revisions-editors
         data = self._prepare_request(rev_ids=True)
         response = self._make_request(data)
-        revisions = {r['id']: r['editor'] for r in response['revisions']}
+        # {rev_id: [timestamp, parent_id, editor]}
+        revisions = {response['revisions'][0]['id']: [response['revisions'][0]['timestamp'],
+                                                      0,
+                                                      response['revisions'][0]['editor']]}
+        for i, rev in enumerate(response['revisions'][1:]):
+            revisions[rev['id']] = [rev['timestamp'],
+                                    response['revisions'][i]['id'],  # parent = previous rev id
+                                    rev['editor']]
+        return revisions
 
+    def get_editor_names(self, revisions):
         # get editor names from wp api
-        editor_ids = {t['editor'] for t in rev_data['tokens'] if not t['editor'].startswith('0|')}
+        editor_ids = {rev_data[2] for rev_id, rev_data in revisions.items() if not rev_data[2].startswith('0|')}
         wp_users_obj = WikipediaUser(editor_ids)
         editor_names_dict = wp_users_obj.get_editor_names()
 
-        # set editor and class names for each token
+        # extend revisions data
+        # {rev_id: [timestamp, parent_id, class_name/editor, editor_name]}
+        for rev_id, rev_data in revisions.items():
+            rev_data.append(editor_names_dict.get(rev_data[2], rev_data[2]))
+            if rev_data[2].startswith('0|'):
+                rev_data[2] = hashlib.md5(rev_data[2].encode('utf-8')).hexdigest()
+
+        return editor_names_dict
+
+    def get_tokens_data(self, revisions, editor_names_dict):
+        data = self._prepare_request()
+        response = self._make_request(data)
+        _, rev_data = response['revisions'][0].popitem()
+        tokens = rev_data['tokens']
+
+        # set editor and class names and calculate conflict score for each token
         # if registered user, class name is editor id
-        for token in rev_data['tokens']:
+        biggest_conflict_score = 0
+        for token in tokens:
+            # set editor name
             token['editor_name'] = editor_names_dict.get(token['editor'], token['editor'])
+            # set class name
             if token['editor'].startswith('0|'):
                 token['class_name'] = hashlib.md5(token['editor'].encode('utf-8')).hexdigest()
             else:
@@ -205,7 +222,7 @@ class WikiWhoRevContent(object):
             editor_in_prev = None
             conflict_score = 0
             for i, out_ in enumerate(token['out']):
-                editor_out = revisions[out_]
+                editor_out = revisions[out_][0]
                 if editor_in_prev is not None and editor_in_prev != editor_out:
                     # exclude first deletions and self reverts (undo actions)
                     conflict_score += 1
@@ -215,10 +232,37 @@ class WikiWhoRevContent(object):
                     # no in for this out. end of loop.
                     pass
                 else:
-                    editor_in = revisions[in_]
+                    editor_in = revisions[in_][0]
                     if editor_out != editor_in:
                         # exclude self reverts (undo actions)
                         conflict_score += 1
                     editor_in_prev = editor_in
             token['conflict_score'] = conflict_score
-        return rev_data['tokens']
+            if conflict_score > biggest_conflict_score:
+                biggest_conflict_score = conflict_score
+
+        return tokens, biggest_conflict_score
+
+    def convert_tokens_data(self, tokens):
+        # convert into list. exclude unnecessary token data
+        # [[conflict_score, str, o_rev_id, in, out, editor/class_name]]
+        return [[token['conflict_score'], token['str'], token['o_rev_id'],
+                 token['in'], token['out'], token['class_name']]
+                for token in tokens]
+
+    def get_revisions_and_tokens(self):
+        """
+        Returns all revisions data of the article and tokens of given article.
+        If no rev id is given, tokens of latest revision is returned.
+        """
+        if self.page_id is None and self.page_title is None and self.rev_id is None:
+            raise Exception('Please provide page id or page title or rev id.')
+
+        revisions = self.get_revisions_data()
+        editor_names_dict = self.get_editor_names(revisions)
+        tokens, biggest_conflict_score = self.get_tokens_data(revisions, editor_names_dict)
+        self.convert_tokens_data(tokens)
+
+        return {'revisions': revisions,
+                'tokens': tokens,
+                'biggest_conflict_score': biggest_conflict_score}
