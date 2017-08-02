@@ -188,7 +188,8 @@ class WikiWhoRevContent(object):
 
     def get_editor_names(self, revisions):
         # get editor names from wp api
-        editor_ids = {rev_data[2] for rev_id, rev_data in revisions.items() if not rev_data[2].startswith('0|')}
+        editor_ids = {rev_data[2] for rev_id, rev_data in revisions.items()
+                      if rev_data[2] and not rev_data[2].startswith('0|')}
         wp_users_obj = WikipediaUser(editor_ids)
         editor_names_dict = wp_users_obj.get_editor_names()
 
