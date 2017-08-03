@@ -22,7 +22,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.0.0-beta.2',
+    version='1.0.0-beta.3',
 
     description='An algorithm to create an on-demand color-markup of the original authors of the text of any article '
                 'on the (english) Wikipedia.',
