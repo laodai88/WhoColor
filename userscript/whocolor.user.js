@@ -1364,26 +1364,33 @@ Wikiwho = {
         $("#wikiwhoAuthorList").hide();
         $("#ageLimitBox").show();
         // Color all tokens according to age
-        var age_opacity_value = 0;
-        var any = false;
+        var ages = [];
         for (var i = 0; i < Wikiwho.tokens.length; i++) {
             var age_days = Wikiwho.tokens[i][6] / (60 * 60 * 24);
-            if (age_days < Wikiwho.ageLimit) {
-                age_opacity_value = (1-age_days/Wikiwho.ageLimit);
-                $('span#token-'+i).css({
-                    'background-color': 'rgba(255,255,0,'+age_opacity_value+')'
-                });
-                any = true;
+            if (age_days <= Wikiwho.ageLimit) {
+                ages.push(age_days);
             }
         }
-        // Mark age view as open
-        Wikiwho.provenanceViewOpen = false;
-        Wikiwho.conflictViewOpen = false;
-        Wikiwho.ageViewOpen = true;
-        $('#provenanceviewbutton').removeClass('provenanceviewbuttonopen');
-        $('#conflictviewbutton').removeClass("conflictviewopen");
-        $('#ageviewbutton').addClass('ageviewbuttonopen');
-        // if (!any) {
+        if (ages.length) {
+            var smallest_age = Math.min.apply(Math, ages);
+            console.log('smallest_age:', smallest_age);
+            var age_opacity_value = 0;
+            for (i = 0; i < Wikiwho.tokens.length; i++) {
+                age_days = Wikiwho.tokens[i][6] / (60 * 60 * 24);
+                if (age_days <= Wikiwho.ageLimit) {
+                    age_opacity_value = (smallest_age/age_days);
+                    $('span#token-'+i).css({'background-color': 'rgba(255,255,0,'+age_opacity_value+')'});
+                }
+            }
+            // Mark age view as open
+            Wikiwho.provenanceViewOpen = false;
+            Wikiwho.conflictViewOpen = false;
+            Wikiwho.ageViewOpen = true;
+            $('#provenanceviewbutton').removeClass('provenanceviewbuttonopen');
+            $('#conflictviewbutton').removeClass("conflictviewopen");
+            $('#ageviewbutton').addClass('ageviewbuttonopen');
+        }
+        // else {
         //     alert('No token younger than ' + Wikiwho.ageLimit + ' days.');
         // }
     },
