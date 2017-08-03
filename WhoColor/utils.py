@@ -6,6 +6,8 @@
 """
 import requests
 import hashlib
+from dateutil import parser
+from datetime import datetime
 
 
 class WikipediaRevText(object):
@@ -219,11 +221,15 @@ class WikiWhoRevContent(object):
                 token['class_name'] = hashlib.md5(token['editor'].encode('utf-8')).hexdigest()
             else:
                 token['class_name'] = token['editor']
+            # calculate age
+            o_rev_ts = parser.parse(revisions[token['o_rev_id']][0])
+            age = datetime.now(o_rev_ts.tzinfo) - o_rev_ts
+            token['age'] = age.total_seconds()
             # calculate conflict score
             editor_in_prev = None
             conflict_score = 0
             for i, out_ in enumerate(token['out']):
-                editor_out = revisions[out_][0]
+                editor_out = revisions[out_][2]
                 if editor_in_prev is not None and editor_in_prev != editor_out:
                     # exclude first deletions and self reverts (undo actions)
                     conflict_score += 1
@@ -233,7 +239,7 @@ class WikiWhoRevContent(object):
                     # no in for this out. end of loop.
                     pass
                 else:
-                    editor_in = revisions[in_][0]
+                    editor_in = revisions[in_][2]
                     if editor_out != editor_in:
                         # exclude self reverts (undo actions)
                         conflict_score += 1
@@ -246,9 +252,9 @@ class WikiWhoRevContent(object):
 
     def convert_tokens_data(self, tokens):
         # convert into list. exclude unnecessary token data
-        # [[conflict_score, str, o_rev_id, in, out, editor/class_name]]
+        # [[conflict_score, str, o_rev_id, in, out, editor/class_name, age]]
         return [[token['conflict_score'], token['str'], token['o_rev_id'],
-                 token['in'], token['out'], token['class_name']]
+                 token['in'], token['out'], token['class_name'], token['age']]
                 for token in tokens]
 
     def get_revisions_and_tokens(self):

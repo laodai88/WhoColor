@@ -78,8 +78,11 @@ Wikiwho = {
     deselectTimeout: null,
     // Variable telling whether history view is opened
     historyViewOpen: false,
-    // Variable telling whether conflict view is opened
+    // Variables telling whether provenance or conflict or age view is opened
+    provenanceViewOpen: false,
     conflictViewOpen: false,
+    ageViewOpen: false,
+    ageLimit: 360,  // days
 
     /* Methods */
 
@@ -140,16 +143,51 @@ Wikiwho = {
         $(window).scroll();
 
         // Editor list
-        $('<div id="conflictviewbutton" title="Conflict view"/>').appendTo(Wikiwho.rightbarcontent);
-        $('<h2>Editor List</h2>').appendTo(Wikiwho.rightbarcontent);
+        $('<input id="provenanceviewbutton" type="button" value="Provenance"/>').appendTo(Wikiwho.rightbarcontent);
+        $('<input id="conflictviewbutton" type="button" value="Conflict"/>').appendTo(Wikiwho.rightbarcontent);
+        $('<input id="ageviewbutton" type="button" value="Age"/>').appendTo(Wikiwho.rightbarcontent);
+        $('<h2 id="wikiwhoAuthorListHeader">Editor List</h2>').appendTo(Wikiwho.rightbarcontent);
         $('<ul id="wikiwhoAuthorList"></ul>').appendTo(Wikiwho.rightbarcontent);
+        // var today = new Date();
+        // today.setMonth(today.getMonth() - Wikiwho.ageLimit);
+        // $('<div><input id="ageLimit" type="date" name="Age Limit" value=' + moment(today).format('YYYY-MM-DD') + '></div>').appendTo(Wikiwho.rightbarcontent);
+        $('<div id="ageLimitBox"><input id="ageLimit" type="number"  min="1" max="1000000000" name="Age Limit" placeholder="Age limit in days" value=' + Wikiwho.ageLimit +'> <input id="ageLimitButton" type="button" value="Calculate"/></div>').appendTo(Wikiwho.rightbarcontent).hide();
 
+        // Provenance view open button click event
+        $('#provenanceviewbutton').click(function() {
+            if(!Wikiwho.provenanceViewOpen) {
+                // if provenance view is closed, conflict or age view must be open
+                if (Wikiwho.conflictViewOpen) {
+                    Wikiwho.closeConflictView();
+                } else if (Wikiwho.ageViewOpen) {
+                    Wikiwho.closeAgeView();
+                }
+            }
+        });
         // Conflict view open button click event
         $('#conflictviewbutton').click(function() {
             if(Wikiwho.conflictViewOpen) {
                 Wikiwho.closeConflictView();
             } else {
                 Wikiwho.openConflictView();
+            }
+        });
+        // Age view open button click event
+        $('#ageviewbutton').click(function() {
+            if(Wikiwho.ageViewOpen) {
+                Wikiwho.closeAgeView();
+            } else {
+                Wikiwho.openAgeView();
+            }
+        });
+        $('#ageLimitButton').click(function(){
+            Wikiwho.ageLimit = $('#ageLimit').val();
+            Wikiwho.openAgeView();
+        });
+        $('#ageLimit').on("keypress", function(e){
+            if (e.keyCode === 13) {
+                Wikiwho.ageLimit = $('#ageLimit').val();
+                Wikiwho.openAgeView();
             }
         });
 
@@ -191,6 +229,9 @@ Wikiwho = {
 
         // Change flag
         Wikiwho.showingUnalteredContent = false;
+        $('#provenanceviewbutton').addClass('provenanceviewbuttonopen');
+        $('#conflictviewbutton').removeClass('conflictviewbuttonopen');
+        $('#ageviewbutton').removeClass('ageviewbuttonopen');
     },
 
     showUnalteredContent: function() {
@@ -278,7 +319,7 @@ Wikiwho = {
 
         // Save author and revision data
         Wikiwho.present_editors = data.present_editors;  // [[editor_name, editor/class_name, editor_score]]
-        Wikiwho.tokens = data.tokens;  // [[conflict_score, str, o_rev_id, in, out, editor/class_name]]
+        Wikiwho.tokens = data.tokens;  // [[conflict_score, str, o_rev_id, in, out, editor/class_name, age]]
         Wikiwho.tokencount = Wikiwho.tokens.length;
         Wikiwho.revisions = data.revisions;  // {rev_id: [timestamp, parent_id, class_name/editor, editor_name]}
         Wikiwho.biggest_conflict_score = parseInt(data.biggest_conflict_score);
@@ -945,8 +986,8 @@ Wikiwho = {
     addSelectionEvents: function() {
         $("html").mouseup(function(e) {
             if (window.getSelection) {
-                // Cancel if history view is already opened
-                if(Wikiwho.historyViewOpen) {
+                // Cancel if history or age view is already opened
+                if(Wikiwho.historyViewOpen || Wikiwho.ageViewOpen) {
                     return;
                 }
 
@@ -1094,6 +1135,9 @@ Wikiwho = {
                         if(Wikiwho.conflictViewOpen) {
                             alert("Conflict view is opened! Please close the conflict view first.");
                             return;
+                        } else if(Wikiwho.ageViewOpen) {
+                            alert("Age view is opened! Please close the age view first.");
+                            return;
                         }
 
                         //var colorindex = Math.floor(Math.random()*Wikiwho.tokenColors.length);
@@ -1218,6 +1262,9 @@ Wikiwho = {
             if(Wikiwho.conflictViewOpen) {
                 alert("Conflict view is opened! Please close the conflict view first.");
                 return;
+            } else if(Wikiwho.ageViewOpen) {
+                alert("Age view is opened! Please close the age view first.");
+                return;
             }
             var editor = $(this).attr('class').match(/token-editor-([a-f0-9]+)/)[1];
             $("li#editor-"+editor).click();
@@ -1260,30 +1307,36 @@ Wikiwho = {
             return;
         }
         // Remove colorization
-        $('span.editor-token').css({'background-color': '', 'color': ''});
+        $('span.editor-token').css({'background-color': '', 'color': ''}).find("*").css('color', '');
+        $("#wikiwhoAuthorListHeader").text('Conflict View');
         $("#wikiwhoAuthorList").hide();
         // $(".editor-token").unbind('mouseenter mouseleave');
         // $(".editor-token").off('mouseenter mouseleave');
         // Color all tokens
-        var conflict_color_value = 0;
+        var conflict_opacity_value = 0;
         for (var i = 0; i < Wikiwho.tokens.length; i++) {
             var conflict_score = Wikiwho.tokens[i][0];
             if (conflict_score !== 0) {
-                conflict_color_value = conflict_score/Wikiwho.biggest_conflict_score;
+                conflict_opacity_value = conflict_score/Wikiwho.biggest_conflict_score;
                 $('span#token-'+i).css({
-                    'background-color': 'rgba(255,0,0,'+conflict_color_value+')',
-                    'color': (conflict_color_value >= 0.5) ? 'white' : 'black'
-                });
+                    'background-color': 'rgba(255,0,0,'+conflict_opacity_value+')',
+                    'color': (conflict_opacity_value >= 0.5) ? 'white' : 'black'
+                }).find("*").css("color", (conflict_opacity_value >= 0.5) ? 'white' : 'black');
             }
         }
         // Mark conflict view as open
-        $('#conflictviewbutton').addClass("conflictviewopen");
+        Wikiwho.provenanceViewOpen = false;
         Wikiwho.conflictViewOpen = true;
+        Wikiwho.ageViewOpen = false;
+        $('#provenanceviewbutton').removeClass('provenanceviewbuttonopen');
+        $('#conflictviewbutton').addClass("conflictviewopen");
+        $('#ageviewbutton').removeClass('ageviewbuttonopen');
     },
 
     closeConflictView: function() {
         // Remove colorization
-        $('span.editor-token').css({'background-color': '', 'color': ''});
+        $('span.editor-token').css({'background-color': '', 'color': ''}).find("*").css('color', '');
+        $("#wikiwhoAuthorListHeader").text('Editor List');
         $("#wikiwhoAuthorList").show();
         // $(".editor-token").on('mouseenter mouseleave');
         // Recolor tokens
@@ -1298,8 +1351,65 @@ Wikiwho = {
             });
         });
         // Mark conflict view as closed
-        $('#conflictviewbutton').removeClass("conflictviewopen");
+        Wikiwho.provenanceViewOpen = true;
         Wikiwho.conflictViewOpen = false;
+        $('#provenanceviewbutton').addClass('provenanceviewbuttonopen');
+        $('#conflictviewbutton').removeClass("conflictviewopen");
+    },
+
+    openAgeView: function() {
+        // Remove colorization
+        $('span.editor-token').css({'background-color': '', 'color': ''}).find("*").css('color', '');
+        $("#wikiwhoAuthorListHeader").text('Age View');
+        $("#wikiwhoAuthorList").hide();
+        $("#ageLimitBox").show();
+        // Color all tokens according to age
+        var age_opacity_value = 0;
+        var any = false;
+        for (var i = 0; i < Wikiwho.tokens.length; i++) {
+            var age_days = Wikiwho.tokens[i][6] / (60 * 60 * 24);
+            if (age_days < Wikiwho.ageLimit) {
+                age_opacity_value = (1-age_days/Wikiwho.ageLimit);
+                $('span#token-'+i).css({
+                    'background-color': 'rgba(255,255,0,'+age_opacity_value+')'
+                });
+                any = true;
+            }
+        }
+        // Mark age view as open
+        Wikiwho.provenanceViewOpen = false;
+        Wikiwho.conflictViewOpen = false;
+        Wikiwho.ageViewOpen = true;
+        $('#provenanceviewbutton').removeClass('provenanceviewbuttonopen');
+        $('#conflictviewbutton').removeClass("conflictviewopen");
+        $('#ageviewbutton').addClass('ageviewbuttonopen');
+        // if (!any) {
+        //     alert('No token younger than ' + Wikiwho.ageLimit + ' days.');
+        // }
+    },
+
+    closeAgeView: function() {
+        // Remove colorization
+        $('span.editor-token').css({'background-color': '', 'color': ''}).find("*").css('color', '');
+        $("#ageLimitBox").hide();
+        $("#wikiwhoAuthorListHeader").text('Editor List');
+        $("#wikiwhoAuthorList").show();
+        // Recolor tokens
+        Object.keys(Wikiwho.coloredAuthors).forEach(function(authorid) {
+            var color = Wikiwho.coloredAuthors[authorid];
+            var contrastColor = Wikiwho.getContrastingColor(color);
+            $("span.token-editor-"+authorid).css({"background-color": color,
+                                                  "color": contrastColor[0]}).find("*").css("color", contrastColor[1]);
+            $('.hvauthorid-'+authorid).css({
+                'background-color': color,
+                'color': contrastColor[0]
+            });
+        });
+        // Mark age view as closed
+        Wikiwho.provenanceViewOpen = true;
+        Wikiwho.ageViewOpen = false;
+        $('#provenanceviewbutton').addClass('provenanceviewbuttonopen');
+        $('#ageviewbutton').removeClass("ageviewbuttonopen");
     },
 
     // Check whether sth should be done and what (on this specific page)
@@ -1542,15 +1652,26 @@ height: 1.5em;\
 background: rgb(167, 215, 249);\
 background-image: repeating-linear-gradient(45deg, transparent, transparent 1em, rgba(255,255,255,.5) 1em, rgba(255,255,255,.5) 2em);\
 }\
+#provenanceviewbutton {\
+background-color: white;\
+height: 24px;\
+}\
+#provenanceviewbutton.provenanceviewbuttonopen {\
+background-color: #00ff00;\
+}\
 #conflictviewbutton {\
-width: 32px;\
-height: 32px;\
-float: right;\
-background-image: url(\""+ Wikiwho.wikicolorUrl + "static/whocolor/images/" + "Speechbubbles_icon.svg\");\
-cursor: pointer;\
+background-color: white;\
+height: 24px;\
 }\
 #conflictviewbutton.conflictviewopen {\
-background-image: url(\""+ Wikiwho.wikicolorUrl + "static/whocolor/images/" + "Speechbubbles_icon_green.svg\");\
+background-color: #00ff00;\
+}\
+#ageviewbutton {\
+background-color: white;\
+height: 24px;\
+}\
+#ageviewbutton.ageviewbuttonopen {\
+background-color: #00ff00;\
 }\
 img.wwhouserinfoicon {\
 height: 1.5em;\
@@ -1585,7 +1706,7 @@ margin-bottom: -0.4em;\
 
 // Do not run in frames
 if (window.top !== window.self) {
-  	// Do nothing
+    // Do nothing
 }else{
     // Initialize the script as soon as the content text / page is loaded
     function waitForMwContent() {
