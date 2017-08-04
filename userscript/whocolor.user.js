@@ -1309,6 +1309,7 @@ Wikiwho = {
         // Remove colorization
         $('span.editor-token').css({'background-color': '', 'color': ''}).find("*").css('color', '');
         $("#wikiwhoAuthorListHeader").text('Conflict View');
+        $("#ageLimitBox").hide();
         $("#wikiwhoAuthorList").hide();
         // $(".editor-token").unbind('mouseenter mouseleave');
         // $(".editor-token").off('mouseenter mouseleave');
