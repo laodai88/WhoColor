@@ -82,7 +82,9 @@ Wikiwho = {
     provenanceViewOpen: false,
     conflictViewOpen: false,
     ageViewOpen: false,
-    ageLimit: 360,  // days
+    ageLimitFrom: 0,  // days
+    ageLimitTo: 360,  // days
+    groupSize: 10,
 
     /* Methods */
 
@@ -151,7 +153,15 @@ Wikiwho = {
         // var today = new Date();
         // today.setMonth(today.getMonth() - Wikiwho.ageLimit);
         // $('<div><input id="ageLimit" type="date" name="Age Limit" value=' + moment(today).format('YYYY-MM-DD') + '></div>').appendTo(Wikiwho.rightbarcontent);
-        $('<div id="ageLimitBox"><input id="ageLimit" type="number"  min="1" max="1000000000" name="Age Limit" placeholder="Age limit in days" value=' + Wikiwho.ageLimit +'> <input id="ageLimitButton" type="button" value="Calculate"/></div>').appendTo(Wikiwho.rightbarcontent).hide();
+        $('<div id="ageLimitBox">'+
+            '<label for="ageLimitFrom">Days from: </label><input id="ageLimitFrom" type="number" min="0" max="9999999999" value=' + Wikiwho.ageLimitFrom +'>'+
+            '<br><br>'+
+            '<label for="ageLimitTo">Days to: </label><input id="ageLimitTo" type="number" min="1" max="9999999999" value=' + Wikiwho.ageLimitTo +'>'+
+            '<br><br>'+
+            '<label for="groupSize">Group size: </label><input id="groupSize" type="number" min="1" max="9999999999" value=' + Wikiwho.groupSize +'>'+
+            '<br><br>'+
+            '<input id="ageLimitButton" type="button" value="Calculate"/>'+
+          '</div>').appendTo(Wikiwho.rightbarcontent).hide();
 
         // Provenance view open button click event
         $('#provenanceviewbutton').click(function() {
@@ -181,12 +191,16 @@ Wikiwho = {
             }
         });
         $('#ageLimitButton').click(function(){
-            Wikiwho.ageLimit = $('#ageLimit').val();
+            Wikiwho.ageLimitFrom = $('#ageLimitFrom').val();
+            Wikiwho.ageLimitTo = $('#ageLimitTo').val();
+            Wikiwho.groupSize = $('#groupSize').val();
             Wikiwho.openAgeView();
         });
-        $('#ageLimit').on("keypress", function(e){
+        $('#ageLimitFrom, #ageLimitTo, #groupSize').on("keypress", function(e){
             if (e.keyCode === 13) {
-                Wikiwho.ageLimit = $('#ageLimit').val();
+                Wikiwho.ageLimitFrom = $('#ageLimitFrom').val();
+                Wikiwho.ageLimitTo = $('#ageLimitTo').val();
+                Wikiwho.groupSize = $('#groupSize').val();
                 Wikiwho.openAgeView();
             }
         });
@@ -1365,32 +1379,24 @@ Wikiwho = {
         $("#wikiwhoAuthorList").hide();
         $("#ageLimitBox").show();
         // Color all tokens according to age
-        var ages = [];
+        var shade_count = Math.ceil((Wikiwho.ageLimitTo-Wikiwho.ageLimitFrom)/Wikiwho.groupSize);
+        var age_days = 0;
+        var age_opacity_value = 0;
         for (var i = 0; i < Wikiwho.tokens.length; i++) {
-            var age_days = Wikiwho.tokens[i][6] / (60 * 60 * 24);
-            if (age_days <= Wikiwho.ageLimit) {
-                ages.push(age_days);
+            age_days = Wikiwho.tokens[i][6] / (60 * 60 * 24);
+            if (Wikiwho.ageLimitFrom <= age_days && age_days <= Wikiwho.ageLimitTo) {
+                age_opacity_value = (1/shade_count) * (shade_count + 1 - Math.ceil((age_days-Wikiwho.ageLimitFrom)/Wikiwho.groupSize));
+                $('span#token-'+i).css({'background-color': 'rgba(255,255,0,'+age_opacity_value+')'});
             }
         }
-        if (ages.length) {
-            var smallest_age = Math.min.apply(Math, ages);
-            console.log('smallest_age:', smallest_age);
-            var age_opacity_value = 0;
-            for (i = 0; i < Wikiwho.tokens.length; i++) {
-                age_days = Wikiwho.tokens[i][6] / (60 * 60 * 24);
-                if (age_days <= Wikiwho.ageLimit) {
-                    age_opacity_value = (smallest_age/age_days);
-                    $('span#token-'+i).css({'background-color': 'rgba(255,255,0,'+age_opacity_value+')'});
-                }
-            }
-            // Mark age view as open
-            Wikiwho.provenanceViewOpen = false;
-            Wikiwho.conflictViewOpen = false;
-            Wikiwho.ageViewOpen = true;
-            $('#provenanceviewbutton').removeClass('provenanceviewbuttonopen');
-            $('#conflictviewbutton').removeClass("conflictviewopen");
-            $('#ageviewbutton').addClass('ageviewbuttonopen');
-        }
+        // Mark age view as open
+        Wikiwho.provenanceViewOpen = false;
+        Wikiwho.conflictViewOpen = false;
+        Wikiwho.ageViewOpen = true;
+        $('#provenanceviewbutton').removeClass('provenanceviewbuttonopen');
+        $('#conflictviewbutton').removeClass("conflictviewopen");
+        $('#ageviewbutton').addClass('ageviewbuttonopen');
+        // }
         // else {
         //     alert('No token younger than ' + Wikiwho.ageLimit + ' days.');
         // }
@@ -1681,6 +1687,15 @@ height: 24px;\
 }\
 #ageviewbutton.ageviewbuttonopen {\
 background-color: #00ff00;\
+}\
+#ageLimitFrom{\
+float: right;\
+}\
+#ageLimitTo{\
+float: right;\
+}\
+#groupSize{\
+float: right;\
 }\
 img.wwhouserinfoicon {\
 height: 1.5em;\
