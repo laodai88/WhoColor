@@ -1421,7 +1421,8 @@ Wikiwho = {
 
     // Check whether sth should be done and what (on this specific page)
     pageCheck: function() {
-        return $("li#ca-nstab-main").hasClass("selected") && $("li#ca-view").hasClass("selected") && !Wikiwho.contentAlreadyReplaced;
+        return $("li#ca-nstab-main").hasClass("selected") && $("li#ca-view").hasClass("selected")
+               && !Wikiwho.contentAlreadyReplaced && !$('table.diff').length;
     },
 
     addStyle: function() {
