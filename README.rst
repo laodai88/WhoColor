@@ -15,7 +15,7 @@ Requirements and Installation
 
 Install WhoColor package (server code) using ``pip``::
 
-    pip install git+git://github.com/wikiwho/WhoColor.git@dev#egg=WhoColor
+    pip install git+git://github.com/wikiwho/WhoColor.git@master#egg=WhoColor
 
 
 Install WhoColor user script using ``Tampermonkey`` or ``Greasemonkey`` for Chrome and Firefox:
