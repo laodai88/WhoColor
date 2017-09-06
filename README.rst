@@ -38,4 +38,4 @@ License
 This work is licensed under MIT (some assets have other licenses, more detailed information in the LICENSE file).
 
 
-***Developed at Karlsruhe Institute of Technology and GESIS - Leibniz Institute for the Social Sciences***
+**Developed at Karlsruhe Institute of Technology and GESIS - Leibniz Institute for the Social Sciences**
