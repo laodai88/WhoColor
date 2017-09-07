@@ -216,7 +216,7 @@ class WikiWhoRevContent(object):
         for token in tokens:
             # set editor name
             token['editor_name'] = editor_names_dict.get(token['editor'], token['editor'])
-            # set class name
+            # set html class name
             if token['editor'].startswith('0|'):
                 token['class_name'] = hashlib.md5(token['editor'].encode('utf-8')).hexdigest()
             else:

@@ -53,7 +53,7 @@ class WikiMarkupParser(object):
             else:
                 self.present_editors[self.token['editor']] = [self.token['editor_name'],
                                                               self.token['class_name'],
-                                                              1]
+                                                              1]  # token count
 
     def __get_first_regex(self, regex):
         # first_match = None
@@ -110,8 +110,8 @@ class WikiMarkupParser(object):
 
     def __add_spans(self, token, new_span=True):
         """
-        If there is only an opened span and new_span is True, close previous span and start new span (no_spans=False)
-        If there is only an opened span and new_span is False, close previous span (no_spans=True)
+        If there is an opened span and new_span is True, close previous span and start new span (no_spans=False)
+        If there is an opened span and new_span is False, close previous span (no_spans=True)
         If there is not an opened span and new_span is True, start a new span (no_spans=False)
         If there is not an opened span and new_span is do nothing (no_spans=True)
         """
@@ -123,11 +123,6 @@ class WikiMarkupParser(object):
                                        format(token['class_name'], self._token_index)
             self._open_span = True
 
-    def __parse(self):
-        # Current WikiWho token
-        self.__set_token()
-        return self.__parse_wiki_text()
-
     def __parse_wiki_text(self, add_spans=True, special_elem=None, no_jump=False):
         """
         There are 3 possible calls of this method in this algorithm.
@@ -138,12 +133,12 @@ class WikiMarkupParser(object):
         add_spans is False, special_elem is not None and no_jump is True: Add each token until end of current special
         element into extended wiki text without spans.
         add_spans is False, special_elem is not None and no_jump is False: Add each token until end of current special
-        element into extended wiki text without spans. If there is special element is inside current special element,
+        element into extended wiki text without spans. If there is special element inside current special element,
         jump into that element and process tokens inside that element
 
         :param add_spans: Flag to decide adding spans around tokens.
-        :param special_elem: Current special element that parser is in.
-        :param no_jump: Flag to prevent jumping into parsing special elements.
+        :param special_elem: Current special element that parser is inside.
+        :param no_jump: Flag to decide jumping into next special element.
         :return: True if parsing is successful.
         """
         # Get end position of current special markup
@@ -170,16 +165,15 @@ class WikiMarkupParser(object):
                     self._jumped_elems.add(next_special_elem['start'])
 
                     if add_spans:
+                        # if no_spans=False, this special markup will have one span around with editor of first token
                         self.__add_spans(self.token, new_span=not next_special_elem['no_spans'])
 
-                    # NOTE: add_spans=False
-                    # => no span will added into this special markup
-                    # if no_spans=False, this special markup will have one span with editor of first token
+                    # NOTE: add_spans=False => no spans will added inside special markups
                     self.__parse_wiki_text(add_spans=False,
                                            special_elem=next_special_elem,
                                            no_jump=next_special_elem['no_jump'])
                     if special_elem:
-                        # _wiki_text_pos is updated, we have to get updated end position of current special markup
+                        # _wiki_text_pos is updated, we have to update the end position of current special markup
                         special_elem_end = self.__get_special_elem_end(special_elem)
                     # Get starting position of next special markup element
                     next_special_elem = self.__get_next_special_element()
@@ -212,13 +206,18 @@ class WikiMarkupParser(object):
             self._open_span = False
         return True
 
+    def __parse(self):
+        # Current WikiWho token
+        self.__set_token()
+        return self.__parse_wiki_text()
+
     def __set_present_editors(self):
         """
         Sort editors who owns tokens in given revision according to percentage of owned tokens in decreasing order.
         """
         self.present_editors = tuple(
-            (editor_name, class_name, count*100.0/self.tokens_len)
-            for editor_id, (editor_name, class_name, count) in
+            (editor_name, class_name, token_count*100.0/self.tokens_len)
+            for editor_id, (editor_name, class_name, token_count) in
             sorted(self.present_editors.items(), key=lambda x: x[1][2], reverse=True)
         )
 

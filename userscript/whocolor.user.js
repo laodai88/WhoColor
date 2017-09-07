@@ -76,10 +76,9 @@ Wikiwho = {
     coloredAuthors: {},
     // Variable holding the timeout that deselects the currently selected author
     deselectTimeout: null,
-    // Variable telling whether history view is opened
-    historyViewOpen: false,
-    // Variables telling whether provenance or conflict or age view is opened
+    // Variable telling whether provenance or history or conflict or age view view is opened
     provenanceViewOpen: false,
+    historyViewOpen: false,
     conflictViewOpen: false,
     ageViewOpen: false,
     ageLimitFrom: 0,  // days
@@ -345,9 +344,9 @@ Wikiwho = {
         // Add token events for WikiWho markup
         Wikiwho.addTokenEvents();
 
+        // Add history view events
         // Add code handling text selections of Wikitext
         Wikiwho.addSelectionEvents();
-
         // Add code to make the history view work
         Wikiwho.addHistoryEvents();
 
@@ -1141,6 +1140,7 @@ Wikiwho = {
                 authentry.mousedown(function(e){ e.preventDefault(); });
                 authentry.click(function() {
                     if(typeof Wikiwho.coloredAuthors[author_id] === 'undefined') {
+                        // if editor is not selected already
                         if(Wikiwho.tokenColors.length === 0) {
                             alert("You can't select any more editors. Please deselect an editors first to be able to select another one again.");
                             return;
@@ -1164,6 +1164,7 @@ Wikiwho = {
                         authentry.css({"background-color": color,
                                        "color": contrastColor[0]});
                     }else{
+                        // if editor is already selected
                         Wikiwho.tokenColors.unshift(Wikiwho.coloredAuthors[author_id]);
                         delete Wikiwho.coloredAuthors[author_id];
                         $("span.token-editor-"+author_id).css({"background-color": "", "color": ""}).find("*").css("color", "");
@@ -1245,7 +1246,7 @@ Wikiwho = {
             // Call the general hover handler
             Wikiwho.hoverToken(authorid);
 
-            // If history view is open add red outline to current token
+            // If history view is open, add red outline to current token
             if((Wikiwho.historyViewOpen) && ($("span#token-age-"+tokenid).length === 1)) {
                 // Add outline
                 $("span#token-age-"+tokenid).removeClass("selected").addClass("hvselected");
