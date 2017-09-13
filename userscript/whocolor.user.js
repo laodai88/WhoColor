@@ -12,6 +12,8 @@
 // @grant        GM_log
 // @match        http://en.wikipedia.org/*
 // @match        https://en.wikipedia.org/*
+// @match        http://eu.wikipedia.org/*
+// @match        https://eu.wikipedia.org/*
 // @copyright    2015+, Felix Stadthaus
 // ==/UserScript==
 
@@ -296,7 +298,8 @@ Wikiwho = {
         location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
 
         //    "title": $("h1#firstHeading").text()
-        var ajax_url = Wikiwho.wikicolorUrl + "whocolor/v1.0.0-beta/" + encodeURIComponent($("h1#firstHeading").text().trim()) + "/";
+        var wiki_lang = location.hostname.split('.')[0];
+        var ajax_url = Wikiwho.wikicolorUrl + wiki_lang + "/whocolor/v1.0.0-beta/" + encodeURIComponent($("h1#firstHeading").text().trim()) + "/";
         if(queryDict["oldid"]) {
             ajax_url = ajax_url + queryDict["oldid"] + "/";
         }
