@@ -1132,7 +1132,7 @@ Wikiwho = {
             // Anonymous authors don't have a contrib page
             if(!author_name.startsWith('0|')) {
                 authentry = $('<li id="editor-'+author_id+'"><span class="editor-score">'+author_score.toFixed(1)+'%</span></li>').appendTo(authorListBox);
-                $('<span><a target="_blank" href="https://en.wikipedia.org/wiki/Special:Contributions/'+author_name+'"><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
+                $('<span><a target="_blank" href="/wiki/Special:Contributions/'+author_name+'"><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
                 $('<span>'+author_name+'</span>').appendTo(authentry);
             }else{
                 authentry = $('<li id="editor-'+author_id+'"><span class="editor-score">'+author_score.toFixed(1)+'%</span><span><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon wwhouserinfoiconhidden"/></span><span>'+author_name+'</span></li>').appendTo(authorListBox);
