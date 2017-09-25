@@ -151,7 +151,7 @@ class WikiWhoRevContent(object):
         self.rev_id = rev_id
 
     def _prepare_request(self, rev_ids=False):
-        ww_api_url = 'https://api.wikiwho.net/api/v1.0.0-beta'
+        ww_api_url = 'https://www.wikiwho.net/api/v1.0.0-beta'
         if rev_ids:
             if self.page_id:
                 url_params = 'page_id/{}'.format(self.page_id)
