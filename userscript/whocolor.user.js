@@ -14,6 +14,8 @@
 // @match        https://en.wikipedia.org/*
 // @match        http://eu.wikipedia.org/*
 // @match        https://eu.wikipedia.org/*
+// @match        http://de.wikipedia.org/*
+// @match        https://de.wikipedia.org/*
 // @copyright    2015+, Felix Stadthaus
 // ==/UserScript==
 
