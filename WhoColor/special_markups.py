@@ -45,7 +45,7 @@ SPECIAL_MARKUPS = (
     },
     # single <nowiki /> tag
     {
-        'type': 'block',
+        'type': 'single',
         'start_regex': re.compile(r'(<nowiki */>)'),
         'end_regex': None,
         'no_spans': True,
