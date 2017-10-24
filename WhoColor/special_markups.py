@@ -43,6 +43,14 @@ SPECIAL_MARKUPS = (
         'no_spans': True,
         'no_jump': False
     },
+    # single <nowiki /> tag
+    {
+        'type': 'block',
+        'start_regex': re.compile(r'(<nowiki */>)'),
+        'end_regex': None,
+        'no_spans': True,
+        'no_jump': True
+    },
     # Math, timeline, nowiki tags
     {
         'type': 'block',
