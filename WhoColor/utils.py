@@ -20,18 +20,20 @@ class WikipediaRevText(object):
         rev_extended_html = wp_rev_text_obj.convert_wiki_text_to_html(wiki_text=rev_data['rev_text'])
     """
 
-    def __init__(self, page_title=None, page_id=None, rev_id=None):
+    def __init__(self, page_title=None, page_id=None, rev_id=None, language='en'):
         """
         :param page_title: Title of an article.
         :param page_id: ID of an article
         :param rev_id: Revision id to get wiki text.
+        :param language: Language of the page.
         """
         self.page_id = page_id
         self.page_title = page_title
         self.rev_id = rev_id
+        self.language = language
 
     def _prepare_request(self, wiki_text=None):
-        data = {'url': 'https://en.wikipedia.org/w/api.php'}
+        data = {'url': 'https://{}.wikipedia.org/w/api.php'.format(self.language)}
         if wiki_text is None:
             params = {'action': 'query', 'prop': 'revisions',
                       'rvprop': 'content|ids', 'rvlimit': '1', 'format': 'json'}
@@ -103,15 +105,16 @@ class WikipediaUser(object):
         wp_user_obj = WikipediaUser(editor_ids)
         editors = wp_user_obj.get_editor_names()
     """
-    def __init__(self, editor_ids):
+    def __init__(self, editor_ids, language='en'):
         # self.editor_ids = set(map(str, editor_ids))  # set of ids
         self.editor_ids = editor_ids  # set of ids
+        self.language = language
 
     def _prepare_request(self):
         params = {'action': 'query', 'list': 'users',
                   'format': 'json', 'ususerids': '|'.join(self.editor_ids)}
         return {
-            'url': 'https://en.wikipedia.org/w/api.php',
+            'url': 'https://{}.wikipedia.org/w/api.php'.format(self.language),
             'data': params
         }
 
@@ -142,16 +145,17 @@ class WikipediaUser(object):
 class WikiWhoRevContent(object):
     """
     Example usage:
-        ww_rev_content = WikiWhoRevContent(page_id=6187)
-        wikiwho_data = ww_rev_content.get_revisions_and_tokens()
+        ww_rev_content_obj = WikiWhoRevContent(page_id=6187)
+        wikiwho_data = ww_rev_content_obj.get_revisions_and_tokens()
     """
-    def __init__(self, page_id=None, page_title=None, rev_id=None):
+    def __init__(self, page_id=None, page_title=None, rev_id=None, language='en'):
         self.page_id = page_id
         self.page_title = page_title
         self.rev_id = rev_id
+        self.language = language
 
     def _prepare_request(self, rev_ids=False):
-        ww_api_url = 'https://www.wikiwho.net/api/v1.0.0-beta'
+        ww_api_url = 'https://www.wikiwho.net/{}/api/v1.0.0-beta'.format(self.language)
         if rev_ids:
             if self.page_id:
                 url_params = 'page_id/{}'.format(self.page_id)
@@ -171,13 +175,7 @@ class WikiWhoRevContent(object):
                                'token_id': 'false', 'out': 'true', 'in': 'true'}}
 
     def _make_request(self, data):
-        import requests
-        session = requests.session()
-        # from requests.auth import HTTPBasicAuth
-        # url = 'https://www.wikiwho.net/'
-        # r1 = session.get(url, auth=HTTPBasicAuth('kandy', 'kandhasamy'))
-        session.auth = ('kandy', 'kandhasamy')
-        response = session.get(**data).json()
+        response = requests.get(**data).json()
         return response
 
     def get_revisions_data(self):
@@ -198,7 +196,7 @@ class WikiWhoRevContent(object):
         # get editor names from wp api
         editor_ids = {rev_data[2] for rev_id, rev_data in revisions.items()
                       if rev_data[2] and not rev_data[2].startswith('0|')}
-        wp_users_obj = WikipediaUser(editor_ids)
+        wp_users_obj = WikipediaUser(editor_ids, self.language)
         editor_names_dict = wp_users_obj.get_editor_names()
 
         # extend revisions data
@@ -274,7 +272,7 @@ class WikiWhoRevContent(object):
         revisions = self.get_revisions_data()
         editor_names_dict = self.get_editor_names(revisions)
         tokens, biggest_conflict_score = self.get_tokens_data(revisions, editor_names_dict)
-        self.convert_tokens_data(tokens)
+        tokens = self.convert_tokens_data(tokens)
 
         return {'revisions': revisions,
                 'tokens': tokens,

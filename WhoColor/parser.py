@@ -18,7 +18,7 @@ class WikiMarkupParser(object):
         self.tokens_len = len(tokens)
         # self.revisions = revisions
         self.token = None
-        self.next_special_elem = None
+        # self.next_special_elem = None
 
         # Saves the current positions
         self._token_index = 0
@@ -110,7 +110,7 @@ class WikiMarkupParser(object):
                     # to be used in __get_special_elem_end - because it has no end regex
                     next_['end'] = next_['start']
                     next_['end_len'] = next_['start_len']
-        self.next_special_elem = next_
+        # self.next_special_elem = next_
         return next_
 
     def __add_spans(self, token, new_span=True):

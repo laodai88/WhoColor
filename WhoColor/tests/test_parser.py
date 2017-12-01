@@ -1,42 +1,23 @@
-import sys
-sys.path.append('H:\wiki-who\WhoColor\WhoColor')
 import unittest
 import pickle
+import os
+
 from WhoColor.parser import WikiMarkupParser
 
-# class TestParser(unittest.TestCase):
-#     def test_whoColor_parser(self):
-#         test_data = pickle.load('who_color_test_data.p')
-#         for article in test_data.keys:
-#             p = WikiMarkupParser(test_data[article]['rev_text'], test_data[article]['tokens'])
-#             p.generate_extended_wiki_markup()
-#             assert p.extended_wiki_text == test_data[article]['extended_wiki_markup']
-#             assert p.present_editors == test_data[article]['present_editors']
 
+class TestParser(unittest.TestCase):
+    def test_parser(self):
+        test_data_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test_data.p')
+        with open(test_data_file_path, 'rb') as f:
+            test_data = pickle.load(f)
 
+        for article, data in test_data.items():
+            p = WikiMarkupParser(data['rev_text'], data['tokens'])
+            p.generate_extended_wiki_markup()
 
+            # Some of the entries in tuple are out of order. Not sure why and hence sorting both based on author id
+            p.present_editors = tuple(sorted(list(p.present_editors), key=lambda x: x[0]))
+            data['present_editors'] = tuple(sorted(list(data['present_editors']), key=lambda x: x[0]))
 
-#test_data = pickle.load(open('../who_color_test_data.p','rb'))
-
-#shrinked datasets - to check the validity quickly and fix the bugs
-test_data = pickle.load(open('../who_color_test_data_shrinked.p','rb'))
-
-for article in test_data.keys():
-    print(article)
-    p = WikiMarkupParser(test_data[article]['rev_text'], test_data[article]['tokens'])
-    p.generate_extended_wiki_markup()
-
-    # Some of the entries in tuple are out of order. Not sure why and hence sorting both based on author id
-    p.present_editors = tuple(sorted(list(p.present_editors), key=lambda x: x[0]))
-    test_data[article]['present_editors'] = tuple(sorted(list( test_data[article]['present_editors']), key=lambda x: x[0]))
-
-    assert p.extended_wiki_text == test_data[article]['extended_wiki_markup']
-    assert p.present_editors == test_data[article]['present_editors']
-
-    #assert len(p.present_editors) == len(test_data[article]['present_editors'])
-    #for i in range(0,len(p.present_editors)):
-    #    if p.present_editors[i] != test_data[article]['present_editors'][i] :
-    #        #print(p.present_editors[i])
-    #        #print(test_data[article]['present_editors'][i])
-    #        print(i)
-print('end of program')
+            assert p.extended_wiki_text == data['extended_wiki_text'], article
+            assert p.present_editors == data['present_editors'], article
