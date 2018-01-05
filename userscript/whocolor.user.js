@@ -10,7 +10,7 @@
 // @grant        GM_getValue
 // @grant        GM_getResourceText
 // @grant        GM_log
-// @include      /^http(s?):\/\/(en|eu|de|tr).wikipedia.org\/(.+)/
+// @include      /^http(s?):\/\/(en|es|eu|de|tr).wikipedia.org\/(.+)/
 // @copyright    2015+, Felix Stadthaus
 // ==/UserScript==
 
