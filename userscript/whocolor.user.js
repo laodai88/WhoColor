@@ -52,6 +52,23 @@
 //
 // http://www.ajaxload.info/ <-- The origin of ajax-loader.gif (License: WTFPL, http://www.wtfpl.net/)
 
+// Pollyfill for Greasemonkey 4, taken from
+// https://github.com/greasemonkey/gm4-polyfill/blob/master/gm4-polyfill.js#L33
+if (typeof GM_addStyle == 'undefined') {
+  this.GM_addStyle = (aCss) => {
+    'use strict';
+    let head = document.getElementsByTagName('head')[0];
+    if (head) {
+      let style = document.createElement('style');
+      style.setAttribute('type', 'text/css');
+      style.textContent = aCss;
+      head.appendChild(style);
+      return style;
+    }
+    return null;
+  };
+}
+
 Wikiwho = {
     /* A few configuration options */
     // Where to fetch Wikicolor data from
