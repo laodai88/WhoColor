@@ -102,17 +102,15 @@ class WikipediaUser(object):
     """
     Example usage to get names of given editor ids:
         editor_ids = set(('30764272', '1465', '5959'))
-        wp_user_obj = WikipediaUser(editor_ids)
-        editors = wp_user_obj.get_editor_names()
+        wp_user_obj = WikipediaUser()
+        editors = wp_user_obj.get_editor_names(editor_ids)
     """
-    def __init__(self, editor_ids, language='en'):
-        # self.editor_ids = set(map(str, editor_ids))  # set of ids
-        self.editor_ids = editor_ids  # set of ids
+    def __init__(self, language='en'):
         self.language = language
 
-    def _prepare_request(self):
+    def _prepare_request(self, editor_ids):
         params = {'action': 'query', 'list': 'users',
-                  'format': 'json', 'ususerids': '|'.join(self.editor_ids)}
+                  'format': 'json', 'ususerids': '|'.join(editor_ids)}
         return {
             'url': 'https://{}.wikipedia.org/w/api.php'.format(self.language),
             'data': params
@@ -122,10 +120,18 @@ class WikipediaUser(object):
         response = requests.post(**data).json()
         return response
 
-    def get_editor_names(self):
+    def get_editor_names(self, editor_ids):
+        """
+        :param editor_ids: list of editor ids
+        :return: a dict {editor_id: editor_name}
+        """
+        editor_ids = list(editor_ids)
         editor_names = {}  # {editor_id: editor_name, ..}
+        editors_len = len(editor_ids)
+        batch_size = 50
+        c = 1
         while True:
-            data = self._prepare_request()
+            data = self._prepare_request(editor_ids[batch_size*(c-1):batch_size*c])
             response = self._make_request(data)
 
             if 'error' in response:
@@ -136,10 +142,11 @@ class WikipediaUser(object):
 
             for user in users:
                 editor_names[str(user['userid'])] = user.get('name', None)
-                self.editor_ids.remove(str(user['userid']))
-            if not self.editor_ids:
-                self.editor_ids = set(editor_names.keys())
-                return editor_names
+
+            if batch_size*c >= editors_len:
+                break
+            c += 1
+        return editor_names
 
 
 class WikiWhoRevContent(object):
@@ -196,8 +203,8 @@ class WikiWhoRevContent(object):
         # get editor names from wp api
         editor_ids = {rev_data[2] for rev_id, rev_data in revisions.items()
                       if rev_data[2] and not rev_data[2].startswith('0|')}
-        wp_users_obj = WikipediaUser(editor_ids, self.language)
-        editor_names_dict = wp_users_obj.get_editor_names()
+        wp_users_obj = WikipediaUser(self.language)
+        editor_names_dict = wp_users_obj.get_editor_names(editor_ids)
 
         # extend revisions data
         # {rev_id: [timestamp, parent_id, class_name/editor, editor_name]}
