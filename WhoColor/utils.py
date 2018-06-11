@@ -120,15 +120,16 @@ class WikipediaUser(object):
         response = requests.post(**data).json()
         return response
 
-    def get_editor_names(self, editor_ids):
+    def get_editor_names(self, editor_ids, batch_size=50):
         """
         :param editor_ids: list of editor ids
+        :param batch_size: number of editor ids (ususerids) in the query. WP allows 50 if not logged in.
         :return: a dict {editor_id: editor_name}
         """
         editor_ids = list(editor_ids)
         editor_names = {}  # {editor_id: editor_name, ..}
         editors_len = len(editor_ids)
-        batch_size = 50
+
         c = 1
         while True:
             data = self._prepare_request(editor_ids[batch_size*(c-1):batch_size*c])
