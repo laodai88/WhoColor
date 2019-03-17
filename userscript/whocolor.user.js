@@ -36,7 +36,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// See her for some resource licenses:
+// See here for some resource licenses:
 //
 // https://commons.wikimedia.org/w/index.php?title=File:Clear_icon.svg&oldid=149014810
 // https://commons.wikimedia.org/w/index.php?title=File:Article_icon.svg&oldid=148759157
@@ -1096,6 +1096,9 @@ Wikiwho = {
 
                     // Calculate optimal history view height
                     var maxviewheight = $(window).height() - (selectionHeight + 20);
+
+                    // Stop hide animation (allows text selection via double-click)
+                    Wikiwho.seqHistBox.stop();
 
                     // Check whether selection is too big and if so, notify the user
                     if((maxviewheight < $(window).height()/5) || (maxviewheight < 150)) {
