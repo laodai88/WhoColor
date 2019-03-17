@@ -1138,13 +1138,18 @@ Wikiwho = {
 
         // Add authors to list box
         for (var i = 0; i < Wikiwho.present_editors.length; i++) {
-            var author_name = Wikiwho.present_editors[i][0].replace(/^0\|/, '');
+            var author_name = Wikiwho.present_editors[i][0];
             var author_id = Wikiwho.present_editors[i][1];  // class name
             var author_score = Wikiwho.present_editors[i][2];
+            var author_is_anonymous = author_name.startsWith('0|')
             // console.log(author_id, author_name, author_score);
 
+            author_name = author_name.replace(/^0\|/, '')
+
             var authentry = $('<li id="editor-'+author_id+'"><span class="editor-score">'+author_score.toFixed(1)+'%</span></li>').appendTo(authorListBox);
-            $('<span><a target="_blank" href="/wiki/Special:Contributions/'+author_name+'"><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
+            $('<span><a target="_blank" href="/wiki/Special:Contributions/'+author_name+'" '
+                    + (author_is_anonymous ? 'style="opacity: 0.3" ': '')
+                    +'><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
             $('<span>'+author_name+'</span>').appendTo(authentry);
 
             // Create click handler (wrap in a closure first so the variables are passed correctly)
