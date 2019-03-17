@@ -526,7 +526,8 @@ Wikiwho = {
                     revinfoline.append($('<div class="hvspacer"></div>'));
 
                     // Append author
-                    revinfoline.append($('<div class="hvrevauthor"></div>').text(Wikiwho.revisions[revisionArr[i]][3]).addClass("hvauthorid-"+Wikiwho.revisions[revisionArr[i]][2]).append($('<div class="hvspacerauth">                                   </div>')));
+                    var author_name = Wikiwho.revisions[revisionArr[i]][3].replace(/^0\|/, '');
+                    revinfoline.append($('<div class="hvrevauthor"></div>').text(author_name).addClass("hvauthorid-"+Wikiwho.revisions[revisionArr[i]][2]).append($('<div class="hvspacerauth">                                   </div>')));
 
                     // Append distance to next revision in list
                     if(i !== revisionArr.length - 1) {
@@ -1137,20 +1138,14 @@ Wikiwho = {
 
         // Add authors to list box
         for (var i = 0; i < Wikiwho.present_editors.length; i++) {
-            var author_name = Wikiwho.present_editors[i][0];
+            var author_name = Wikiwho.present_editors[i][0].replace(/^0\|/, '');
             var author_id = Wikiwho.present_editors[i][1];  // class name
             var author_score = Wikiwho.present_editors[i][2];
             // console.log(author_id, author_name, author_score);
-            var authentry;
 
-            // Anonymous authors don't have a contrib page
-            if(!author_name.startsWith('0|')) {
-                authentry = $('<li id="editor-'+author_id+'"><span class="editor-score">'+author_score.toFixed(1)+'%</span></li>').appendTo(authorListBox);
-                $('<span><a target="_blank" href="/wiki/Special:Contributions/'+author_name+'"><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
-                $('<span>'+author_name+'</span>').appendTo(authentry);
-            }else{
-                authentry = $('<li id="editor-'+author_id+'"><span class="editor-score">'+author_score.toFixed(1)+'%</span><span><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon wwhouserinfoiconhidden"/></span><span>'+author_name+'</span></li>').appendTo(authorListBox);
-            }
+            var authentry = $('<li id="editor-'+author_id+'"><span class="editor-score">'+author_score.toFixed(1)+'%</span></li>').appendTo(authorListBox);
+            $('<span><a target="_blank" href="/wiki/Special:Contributions/'+author_name+'"><img src="'+ Wikiwho.wikicolorUrl + 'static/whocolor/images/UserAvatar.svg" class="wwhouserinfoicon"/></a></span>').appendTo(authentry);
+            $('<span>'+author_name+'</span>').appendTo(authentry);
 
             // Create click handler (wrap in a closure first so the variables are passed correctly)
             (function(author_id, authentry) {
