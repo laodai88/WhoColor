@@ -136,7 +136,7 @@ Wikiwho = {
 
         // The button to switch into wikicolor mode
         Wikiwho.onoffbutton = $('<li id="wikiwhoonoffbutton"><span><a>WhoColor</a></span></li>');
-        $("div#p-views ul").prepend(Wikiwho.onoffbutton);
+        $("#p-views ul").prepend(Wikiwho.onoffbutton);
         Wikiwho.onoffbutton.find("a").click(function() { Wikiwho.onoffbuttonclick(); });
 
         // The menu on the right (displaying authors)
