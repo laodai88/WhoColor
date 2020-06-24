@@ -11,7 +11,7 @@ NOTE 2: There is an official Firefox extension by the WMF created in collaborati
 
 WhoColor
 ========
-The WhoColor userscript colors Wikipedia articles based on by-word authorship.
+The WhoColor userscript colors Wikipedia articles based on by-word authorship, gives color-coded information on conflicts and age and provides per-word revision histories.
 
 Take a look at http://f-squared.org/whovisual/ for more information.
 
@@ -37,6 +37,12 @@ Install WhoColor user script using ``Tampermonkey`` or ``Greasemonkey`` for Chro
 - Open `user script <https://github.com/wikiwho/WhoColor/blob/dev/userscript/whocolor.user.js>`_ and click on ``Raw`` button on the top right
 - ``Tampermonkey`` or ``Greasemonkey`` will automatically detect the user script and ask to install it
 - Open an article in Wikipedia and now you should see the ``WhoColor`` to the left of the default "Read" tab in the head navigation of the article
+
+Known Issues
+=======
+* Only works guaranteed with the default Mediawiki skin
+* Check out the other issues https://github.com/wikiwho/WhoColor/issues
+* Some issues, like incorrect parsing of templates come from the underlying WhoColor API that we also run, so they cannot be fixed in the userscript
 
 Contact
 =======
