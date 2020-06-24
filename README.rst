@@ -1,7 +1,7 @@
 
 Current notes
 ===========
-NOTE 1: This is a side project by `Faflo <https://github.com/faflo>`_ . I currently do not have the resources  to follow up on all issues with WhoColor. So **please feel free to submit pull requests** or tell someone you know that is knowledgable to submit them. I will comment on issues, and help with resolving them.  Pull requests can be done on the userscript, which will then be included by all clients. You can also help make the underyling API-code better, which lives in the /WhoColor/ folder. This, we will carefully review and then deploy to the underlying API, which we also run. 
+NOTE 1: This is a side project by `Faflo <https://github.com/faflo>`_ . I currently do not have the resources  to follow up on all issues with WhoColor. So **please feel free to submit pull requests** or tell someone you know that is knowledgable to submit them. I will comment on issues, and help with resolving them.  Pull requests can be done on the userscript, which will then be included by all clients. You can also help make the underlying parsing and API-code better, which lives in the /WhoColor/ folder. This, we will carefully review and then deploy to the underlying API, which we also run. 
 
 NOTE 2: There is an official Firefox extension by the WMF created in collaboration with us that is much more refined than the userscript regarding the UI and some other things - although only offering provenance/authorship view, not conflict/age/history. Depending on what you need, this might be more suited for you: https://addons.mozilla.org/en-US/firefox/addon/whowrotethat/
 
