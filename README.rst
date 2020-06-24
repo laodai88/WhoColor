@@ -1,11 +1,21 @@
 
-.. image:: https://github.com/wikiwho/WhoColor/blob/dev/WhoColor/static/whocolor/readme/whocolorpreview.png
+Current notes
+===========
+NOTE 1: This is a side project by `Faflo <https://github.com/faflo>`_ . I currently do not have the resources  to follow up on all issues with WhoColor. So **please feel free to submit pull requests** or tell someone you know that is knowledgable to submit them. I will comment on issues, and help with resolving them.  
+
+NOTE 2: There is an official Firefox extension by the WMF created in collaboration with us that is much more refined than the userscript regarding the UI and some other things - although only offering provenance/authorship view, not conflict/age/history. Depending on what you need, this might be more suited for you: https://addons.mozilla.org/en-US/firefox/addon/whowrotethat/
+
+
+
+
 
 WhoColor
 ========
 The WhoColor userscript colors Wikipedia articles based on by-word authorship.
 
 Take a look at http://f-squared.org/whovisual/ for more information.
+
+.. image:: https://github.com/wikiwho/WhoColor/blob/dev/WhoColor/static/whocolor/readme/whocolorpreview.png
 
 Requirements and Installation
 =============================
@@ -30,8 +40,7 @@ Install WhoColor user script using ``Tampermonkey`` or ``Greasemonkey`` for Chro
 
 Contact
 =======
-* Fabian Floeck: fabian.floeck[.]gesis.org
-* Kenan Erdogan: kenan.erdogan[.]gesis.org
+* Fabian Floeck: f.floeck+wikiwho[.]gmail.com
 
 License
 =======
