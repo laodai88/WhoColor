@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         WhoColor Userscript
-// @namespace    https://www.wikiwho.net/whocolor/v1.0.0-beta/
+// @namespace    https://wikiwho-api.wmcloud.org/whocolor/v1.0.0-beta/
 // @version      1.1
 // @description  Displays authorship information on wikipedia.
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
-// @require      https://www.wikiwho.net/static/whocolor/scripts/moment-with-locales.js
+// @require      https://wikiwho-api.wmcloud.org/static/whocolor/scripts/moment-with-locales.js
 // @grant        GM_addStyle
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -72,7 +72,8 @@ if (typeof GM_addStyle == 'undefined') {
 Wikiwho = {
     /* A few configuration options */
     // Where to fetch Wikicolor data from
-    wikicolorUrl: "https://www.wikiwho.net/",
+    wikicolorUrl: "https://wikiwho-api.wmcloud.org/",
+    // wikicolorUrl: "https://www.wikiwho.net/",
     // wikicolorUrl: "http://127.0.0.1:8000/",
 
     // Color palette for highlighting of tokens (Kelly)
