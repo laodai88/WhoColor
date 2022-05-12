@@ -34,7 +34,7 @@ Install WhoColor user script using ``Tampermonkey`` or ``Greasemonkey`` for Chro
  - `Tampermonkey <https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo/>`_ for Chrome
  - `Tampermonkey <https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/>`_ for Firefox
  - `Greasemonkey <https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/>`_ for Firefox
-- Open `user script <https://github.com/wikiwho/WhoColor/blob/dev/userscript/whocolor.user.js>`_ and click on ``Raw`` button on the top right
+- Open `user script <https://github.com/wikiwho/WhoColor/blob/master/userscript/whocolor.user.js>`_ and click on ``Raw`` button on the top right
 - ``Tampermonkey`` or ``Greasemonkey`` will automatically detect the user script and ask to install it
 - Open an article in Wikipedia and now you should see the ``WhoColor`` to the left of the default "Read" tab in the head navigation of the article
 
